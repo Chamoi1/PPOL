@@ -1,10 +1,12 @@
 from django.contrib.auth import views as auth
+from django.views.generic import RedirectView
 from django.urls import path
 from . import views as v
 
 urlpatterns = [
     path("", v.home, name="home"),
     path("ingresar/", auth.LoginView.as_view(), name="login"),
+    path("login/", RedirectView.as_view(pattern_name="login", permanent=False)),
     path("salir/", auth.LogoutView.as_view(), name="logout"),
     path("registro/<str:kind>/", v.register, name="register"),
 

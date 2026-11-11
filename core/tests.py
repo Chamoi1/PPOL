@@ -61,6 +61,10 @@ class PPOLCoreTests(TestCase):
             status="ACT"
         )
 
+    def test_legacy_login_url_redirects_to_login_page(self):
+        response = self.client.get("/login/")
+        self.assertRedirects(response, reverse("login"))
+
     # HU01: Registro y Login Estudiante
     def test_student_registration_and_login(self):
         resp = self.client.post(reverse("register", kwargs={"kind": "estudiante"}), {
