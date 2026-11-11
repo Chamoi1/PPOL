@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Gestión de Usuarios · PPOL{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Gestión de Usuarios (HU10)</h1>
+    <p class="page-subtitle">Activa, suspende o elimina cuentas de estudiantes, empresas y administradores del sistema.</p>
+  </div>
+  <a class="btn ghost" href="{% url 'admin:core_user_changelist' %}" target="_blank">
+    Abrir en Django Admin
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+  </a>
+</div>
+
+<div class="filter-panel">
+  <form class="bar" method="get">
+    <input name="q" placeholder="Buscar por nombre o correo..." value="{{ g.q }}" style="flex:1;min-width:200px">
+    <select name="role" style="min-width:160px">
+      <option value="">Todos los roles</option>
+      {% for k,l in roles %}
+        <option value="{{ k }}" {% if g.role == k %}selected{% endif %}>{{ l }}</option>
+      {% endfor %}
+    </select>
+    <select name="status" style="min-width:160px">
+      <option value="">Todos los estados</option>
+      <option value="active" {% if g.status == 'active' %}selected{% endif %}>Solo activos</option>
+      <option value="inactive" {% if g.status == 'inactive' %}selected{% endif %}>Solo suspendidos</option>
+    </select>
+    <button type="submit">Buscar</button>
+    {% if g.q or g.role or g.status %}
+      <a class="btn ghost" href="{% url 'admin_users' %}">Limpiar</a>
+    {% endif %}
+  </form>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Usuario</th>
+        <th>Rol</th>
+        <th>Detalle del Perfil</th>
+        <th>Fecha Registro</th>
+        <th>Estado</th>
+        <th style="text-align:right">Acciones (HU10)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users_list %}
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="avatar {% if u.role == 'ADM' %}brand{% elif u.role == 'EMP' %}indigo{% endif %}">
+              {{ u.first_name|default:u.email|slice:":2" }}
+            </div>
+            <div>
+              <strong style="display:block;color:var(--ink)">{{ u.first_name|default:u.username }}</strong>
+              <span class="muted" style="font-size:12.5px">{{ u.email }}</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <span class="chip {% if u.role == 'ADM' %}brand{% elif u.role == 'EMP' %}accent{% else %}warn{% endif %}">
+            {{ u.get_role_display }}
+          </span>
+        </td>
+        <td style="font-size:13px;color:var(--ink-soft)">
+          {% if u.role == 'EST' and u.student %}
+            <span>Cód: <strong>{{ u.student.code }}</strong> · {{ u.student.program }} (Sem. {{ u.student.semester }})</span>
+            {% if u.student.cv %}
+              <div style="margin-top:3px;"><a href="{{ u.student.cv.url }}" target="_blank" style="font-size:11.5px;color:var(--brand-dark);font-weight:700;">📄 Ver Hoja de Vida</a></div>
+            {% endif %}
+          {% elif u.role == 'EMP' and u.company %}
+            <span>NIT: <strong>{{ u.company.nit }}</strong> · {{ u.company.sector }} · {{ u.company.contact }}</span>
+          {% else %}
+            <span class="muted">Superadministrador del sistema</span>
+          {% endif %}
+        </td>
+        <td style="font-size:13px;color:var(--muted)">
+          {{ u.date_joined|date:"d/m/Y H:i" }}
+        </td>
+        <td>
+          {% if u.is_active %}
+            <span class="chip good">Activo</span>
+          {% else %}
+            <span class="chip bad">Suspendido</span>
+          {% endif %}
+        </td>
+        <td style="text-align:right">
+          <div style="display:inline-flex;gap:6px;align-items:center">
+            <!-- Activar / Suspender -->
+            <form method="post" action="{% url 'admin_user_toggle' u.pk %}" style="margin:0">
+              {% csrf_token %}
+              <button class="sm {% if u.is_active %}ghost{% else %}good{% endif %}" title="Cambiar estado">
+                {% if u.is_active %}
+                  Suspender
+                {% else %}
+                  Reactivar
+                {% endif %}
+              </button>
+            </form>
+
+            <!-- Eliminar con confirmación -->
+            {% if u != request.user %}
+            <form method="post" action="{% url 'admin_user_delete' u.pk %}" onsubmit="return confirm('¿Seguro que deseas eliminar definitivamente este usuario ({{ u.email }})?');" style="margin:0">
+              {% csrf_token %}
+              <button class="sm bad" title="Eliminar cuenta">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" style="text-align:center;padding:32px;" class="muted">
+          No se encontraron usuarios con los criterios de búsqueda seleccionados.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

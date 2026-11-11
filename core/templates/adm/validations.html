@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Panel de validaciones · PPOL{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Centro de validaciones institucionales</h1>
+    <p class="page-subtitle">Revisa y aprueba las solicitudes de registro empresarial y las nuevas convocatorias antes de su publicación.</p>
+  </div>
+</div>
+
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+  <h2 style="margin:0;font-size:20px">Empresas pendientes de validación</h2>
+  <span class="chip {% if companies %}warn{% else %}good{% endif %}" style="margin:0">{{ companies|length }}</span>
+</div>
+
+{% for c in companies %}
+<div class="card row-center">
+  <div style="display:flex;gap:16px;align-items:center">
+    <div class="avatar">{{ c.name|slice:":2" }}</div>
+    <div>
+      <h2 style="margin:0 0 2px;font-size:18px">{{ c.name }}</h2>
+      <div class="muted">
+        <strong>NIT:</strong> {{ c.nit }} · <strong>Sector:</strong> {{ c.sector }} · <strong>Contacto:</strong> {{ c.contact }} ({{ c.user.email }})
+      </div>
+    </div>
+  </div>
+  <form method="post" class="bar" style="margin:0">
+    {% csrf_token %}
+    <input type="hidden" name="kind" value="company">
+    <input type="hidden" name="id" value="{{ c.pk }}">
+    <input name="notes" placeholder="Observaciones (opcional o motivo rechazo)" style="min-width:260px">
+    <button name="decision" value="ok" class="sm">✓ Aprobar empresa</button>
+    <button name="decision" value="no" class="sm bad">✕ Rechazar</button>
+  </form>
+</div>
+{% empty %}
+<div class="card muted" style="text-align:center;padding:28px;border-style:dashed">
+  ✓ Todas las solicitudes empresariales han sido revisadas. No hay empresas pendientes.
+</div>
+{% endfor %}
+
+<div style="display:flex;align-items:center;gap:10px;margin:32px 0 14px">
+  <h2 style="margin:0;font-size:20px">Convocatorias pendientes de aprobación</h2>
+  <span class="chip {% if offers %}warn{% else %}good{% endif %}" style="margin:0">{{ offers|length }}</span>
+</div>
+
+{% for o in offers %}
+<div class="card">
+  <div class="row-center">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+        <h2 style="margin:0;font-size:18px">{{ o.title }}</h2>
+        <span class="chip brand" style="margin:0">{{ o.get_kind_display }}</span>
+        <span class="chip" style="margin:0">{{ o.get_mode_display }}</span>
+        <span class="chip" style="margin:0">{{ o.area }}</span>
+      </div>
+      <div class="muted">
+        <strong>{{ o.company.name }}</strong> · {{ o.city }} · Dirigida a: {{ o.programs }} · Cierre: {{ o.deadline|date:"d/m/Y" }}
+      </div>
+    </div>
+
+    <form method="post" class="bar" style="margin:0">
+      {% csrf_token %}
+      <input type="hidden" name="kind" value="offer">
+      <input type="hidden" name="id" value="{{ o.pk }}">
+      <button name="decision" value="ok" class="sm">✓ Aprobar y publicar</button>
+      <button name="decision" value="no" class="sm bad">✕ Rechazar</button>
+    </form>
+  </div>
+  <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-soft)">
+    <strong>Descripción:</strong> {{ o.description|truncatewords:35 }}
+  </div>
+</div>
+{% empty %}
+<div class="card muted" style="text-align:center;padding:28px;border-style:dashed">
+  ✓ No hay convocatorias pendientes por revisar en este momento.
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{% if offer %}Editar oferta{% else %}Publicar oferta{% endif %} · PPOL{% endblock %}
+{% block content %}
+<div class="breadcrumb">
+  <a href="{% url 'company_offers' %}">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    Mis convocatorias
+  </a>
+  <span>/</span>
+  <span>{% if offer %}Editar oferta{% else %}Nueva convocatoria{% endif %}</span>
+</div>
+
+<div class="card form" style="max-width:720px;margin:0 auto;padding:32px">
+  <h1 style="font-size:24px;margin-bottom:6px">{% if offer %}Editar convocatoria{% else %}Publicar nueva oferta{% endif %}</h1>
+  <p class="muted" style="margin:0 0 24px">
+    Toda oferta nueva o modificada pasa por revisión del administrador antes de hacerse visible para los estudiantes.
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div style="display:flex;gap:12px;align-items:center;margin-top:24px;padding-top:18px;border-top:1px solid var(--line)">
+      <button class="btn lg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Enviar convocatoria a revisión
+      </button>
+      <a class="btn lg ghost" href="{% url 'company_offers' %}">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Comparar candidatos · PPOL{% endblock %}
+{% block content %}
+<div class="breadcrumb">
+  <a href="{% url 'applicants' offer.pk %}">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    Volver a postulantes de {{ offer.title }}
+  </a>
+</div>
+
+<div class="page-header">
+  <div>
+    <h1>Comparativa de candidatos</h1>
+    <p class="page-subtitle">Evaluación lado a lado para la vacante <strong>{{ offer.title }}</strong>.</p>
+  </div>
+</div>
+
+{% if apps %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:180px">Criterio</th>
+        {% for a in apps %}
+        <th>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="avatar indigo" style="width:36px;height:36px;font-size:14px">{{ a.student.get_full_name|default:a.student.email|slice:":2" }}</div>
+            <div>
+              <div style="font-size:15px;color:var(--ink);text-transform:none;letter-spacing:0">
+                {{ a.student.get_full_name|default:a.student.email }}
+                {% if a.favorite %}<span style="color:var(--gold)">★</span>{% endif %}
+              </div>
+              <div class="muted" style="font-size:12px;font-weight:500;text-transform:none">{{ a.student.email }}</div>
+            </div>
+          </div>
+        </th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Programa académico</th>
+        {% for a in apps %}<td><strong>{{ a.student.student.program }}</strong></td>{% endfor %}
+      </tr>
+      <tr>
+        <th>Semestre actual</th>
+        {% for a in apps %}<td>Semestre {{ a.student.student.semester }}</td>{% endfor %}
+      </tr>
+      <tr>
+        <th>Habilidades</th>
+        {% for a in apps %}<td>{{ a.student.student.skills|default:"—" }}</td>{% endfor %}
+      </tr>
+      <tr>
+        <th>Idiomas</th>
+        {% for a in apps %}<td>{{ a.student.student.languages|default:"—" }}</td>{% endfor %}
+      </tr>
+      <tr>
+        <th>Experiencia</th>
+        {% for a in apps %}<td>{{ a.student.student.experience|default:"—"|linebreaksbr }}</td>{% endfor %}
+      </tr>
+      <tr>
+        <th>Completitud perfil</th>
+        {% for a in apps %}
+        <td>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="progress" style="flex:1;max-width:120px"><i style="width:{{ a.student.student.completeness }}%"></i></div>
+            <strong>{{ a.student.student.completeness }}%</strong>
+          </div>
+        </td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <th>Estado del proceso</th>
+        {% for a in apps %}
+        <td>
+          <span class="chip brand" style="margin:0">{{ a.get_status_display }}</span>
+        </td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <th>Nota interna</th>
+        {% for a in apps %}<td class="muted">{{ a.note|default:"Sin observaciones" }}</td>{% endfor %}
+      </tr>
+      <tr>
+        <th>Hoja de vida</th>
+        {% for a in apps %}
+        <td>
+          {% if a.student.student.cv %}
+            <a class="btn sm ghost" href="{{ a.student.student.cv.url }}" target="_blank">📄 Ver PDF</a>
+          {% else %}
+            <span class="muted">No adjunta</span>
+          {% endif %}
+        </td>
+        {% endfor %}
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <h3>No seleccionaste candidatos para comparar</h3>
+  <p>Marca la casilla de verificación junto a dos o más postulantes en la lista anterior.</p>
+  <a class="btn" href="{% url 'applicants' offer.pk %}">Volver a la lista de postulantes</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block title %}Ofertas disponibles · PPOL{% endblock %}
+{% block content %}
+<style>
+.search-hero {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(19, 78, 74, 0.88) 100%);
+  backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid rgba(94, 234, 212, 0.3);
+  border-radius: 20px;
+  padding: 28px 32px;
+  color: #fff;
+  margin-bottom: 24px;
+  box-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.22);
+}
+.search-hero h1 {
+  color: #fff;
+  margin: 0 0 6px;
+  font-size: 26px;
+}
+.search-hero p {
+  color: #cbd5e1;
+  margin: 0 0 20px;
+  font-size: 14.5px;
+}
+.search-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr auto;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  padding: 10px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
+}
+.search-grid input, .search-grid select {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+}
+@media (max-width: 1040px) {
+  .search-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .search-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.offer-card-body {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  flex: 1;
+}
+.offer-desc-preview {
+  color: var(--ink-soft);
+  font-size: 14px;
+  margin: 8px 0 4px;
+  line-height: 1.5;
+}
+.offer-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.offer-tab-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #cbd5e1;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.offer-tab-btn:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.16);
+}
+.offer-tab-btn.active {
+  background: #14b8a6;
+  color: #fff;
+  border-color: #5eead4;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.35);
+}
+</style>
+
+<div class="search-hero">
+  <div class="row-center" style="margin-bottom:14px">
+    <div>
+      <h1>Oportunidades disponibles</h1>
+      <p style="margin:0">Explora vacantes verificadas de prácticas profesionales y primer empleo para estudiantes UCC.</p>
+    </div>
+    <span class="chip" style="background:rgba(255,255,255,0.14);color:#fff;border-color:rgba(255,255,255,0.2)">
+      {{ offers|length }} {% if offers|length == 1 %}convocatoria activa{% else %}convocatorias activas{% endif %}
+    </span>
+  </div>
+
+  <div class="offer-tabs">
+    <a href="{% url 'offers' %}" class="offer-tab-btn {% if tab != 'recomendadas' %}active{% endif %}">
+      🌐 Todas las ofertas
+    </a>
+    <a href="{% url 'offers' %}?tab=recomendadas" class="offer-tab-btn {% if tab == 'recomendadas' %}active{% endif %}">
+      ⭐ Recomendadas para ti (HU12)
+    </a>
+  </div>
+
+  <form class="search-grid" method="get">
+    {% if tab == 'recomendadas' %}<input type="hidden" name="tab" value="recomendadas">{% endif %}
+    <input name="q" placeholder="Cargo, palabra clave o requisitos..." value="{{ g.q }}">
+    <select name="company">
+      <option value="">Todas las empresas</option>
+      {% for c in companies %}<option value="{{ c.id }}" {% if g.company == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+    </select>
+    <select name="kind">
+      <option value="">Todos los tipos</option>
+      {% for k,l in kinds %}<option value="{{ k }}" {% if g.kind == k %}selected{% endif %}>{{ l }}</option>{% endfor %}
+    </select>
+    <select name="mode">
+      <option value="">Modalidad</option>
+      {% for k,l in modes %}<option value="{{ k }}" {% if g.mode == k %}selected{% endif %}>{{ l }}</option>{% endfor %}
+    </select>
+    <select name="area">
+      <option value="">Área profesional</option>
+      {% for a in areas %}<option value="{{ a.id }}" {% if g.area == a.id|stringformat:"s" %}selected{% endif %}>{{ a.name }}</option>{% endfor %}
+    </select>
+    <input name="city" placeholder="Ciudad..." value="{{ g.city }}">
+    <button type="submit">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      Filtrar
+    </button>
+  </form>
+  {% if g.q or g.company or g.kind or g.mode or g.area or g.city or tab == 'recomendadas' %}
+  <div style="margin-top:12px;display:flex;align-items:center;gap:10px;font-size:13px">
+    <span style="color:#94a3b8">Filtros aplicados</span>
+    <a href="{% url 'offers' %}" style="color:#5eead4;font-weight:600">Limpiar todos los filtros ×</a>
+  </div>
+  {% endif %}
+</div>
+
+{% for o in offers %}
+<div class="card interactive row-center">
+  <div class="offer-card-body">
+    <div class="avatar">{{ o.company.name|slice:":2" }}</div>
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <h2 style="margin:0;font-size:18px">
+          <a href="{% url 'offer_detail' o.pk %}" style="color:var(--ink)">{{ o.title }}</a>
+        </h2>
+        <span class="chip {% if o.kind == 'PRA' %}brand{% else %}accent{% endif %}">{{ o.get_kind_display }}</span>
+      </div>
+      <div class="muted" style="margin-top:2px;font-weight:500">
+        <strong style="color:var(--ink-soft)">{{ o.company.name }}</strong> · {{ o.city }}
+      </div>
+      <p class="offer-desc-preview">{{ o.description|truncatewords:24 }}</p>
+      <div class="chips">
+        <span class="chip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          {{ o.get_mode_display }}
+        </span>
+        <span class="chip">{{ o.area }}</span>
+        <span class="chip warn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Cierra {{ o.deadline|date:"d/m/Y" }}
+        </span>
+      </div>
+    </div>
+  </div>
+  <a class="btn ghost" href="{% url 'offer_detail' o.pk %}">
+    Ver detalle
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+  </a>
+</div>
+{% empty %}
+<div class="empty-state">
+  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+  <h3>No encontramos ofertas con estos criterios</h3>
+  <p>Prueba ajustando tus términos de búsqueda o quitando alguno de los filtros activos.</p>
+  <a class="btn ghost" href="{% url 'offers' %}">Ver todas las ofertas</a>
+</div>
+{% endfor %}
+{% endblock %}

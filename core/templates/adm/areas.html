@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Gestión de Áreas Profesionales · PPOL{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Áreas Profesionales y Categorías (HU10)</h1>
+    <p class="page-subtitle">Administra las áreas del conocimiento bajo las cuales las empresas clasifican sus convocatorias.</p>
+  </div>
+</div>
+
+<div class="grid-2" style="align-items:start;gap:24px;">
+  <!-- Formulario crear nueva área -->
+  <div class="card form" style="padding:28px;">
+    <h2 style="margin-top:0;font-size:18px;margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:10px;">
+      Crear nueva área
+    </h2>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="create_area" value="1">
+      <p>
+        <label for="id_name">Nombre del área:</label>
+        {{ form.name }}
+        {{ form.name.errors }}
+      </p>
+      <button class="btn block">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Registrar área
+      </button>
+    </form>
+  </div>
+
+  <!-- Lista de áreas existentes -->
+  <div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <h2 style="margin:0;font-size:18px">Áreas activas</h2>
+      <span class="chip brand" style="margin:0">{{ areas|length }}</span>
+    </div>
+
+    {% for a in areas %}
+    <div class="card" style="padding:16px 20px;margin-bottom:12px;">
+      <div class="row-center">
+        <div>
+          <strong style="font-size:16px;color:var(--ink)">{{ a.name }}</strong>
+          <div class="muted" style="font-size:12.5px;margin-top:3px;">
+            {{ a.offers_count }} {% if a.offers_count == 1 %}convocatoria registrada{% else %}convocatorias registradas{% endif %}
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;">
+          <!-- Botón editar nombre -->
+          <button onclick="document.getElementById('edit-area-{{ a.pk }}').style.display = (document.getElementById('edit-area-{{ a.pk }}').style.display === 'none' ? 'block' : 'none')" class="sm ghost">
+            Renombrar
+          </button>
+
+          <!-- Botón eliminar -->
+          <form method="post" action="{% url 'admin_area_delete' a.pk %}" onsubmit="return confirm('¿Seguro que deseas eliminar el área «{{ a.name }}»?');" style="margin:0">
+            {% csrf_token %}
+            <button class="sm bad" {% if a.offers_count > 0 %}disabled title="No se puede eliminar porque tiene convocatorias vinculadas"{% endif %}>
+              Eliminar
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Formulario oculto de edición -->
+      <div id="edit-area-{{ a.pk }}" style="display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);">
+        <form method="post" action="{% url 'admin_area_edit' a.pk %}" class="bar" style="margin:0;">
+          {% csrf_token %}
+          <input name="name" value="{{ a.name }}" style="flex:1;">
+          <button class="sm">Guardar</button>
+          <button type="button" onclick="document.getElementById('edit-area-{{ a.pk }}').style.display='none'" class="sm ghost">Cancelar</button>
+        </form>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <p>No hay áreas profesionales registradas aún.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Mi perfil profesional · PPOL{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Mi perfil profesional</h1>
+    <p class="page-subtitle">Mantén actualizada tu información académica y hoja de vida para destacar ante las empresas.</p>
+  </div>
+</div>
+
+<div class="layout-profile">
+  <div>
+    <div class="card" style="text-align:center;padding:28px 22px">
+      <div class="avatar lg" style="margin:0 auto 14px">{{ user.first_name|default:user.email|slice:":2" }}</div>
+      <h2 style="margin:0 0 4px">{{ user.first_name|default:user.email }}</h2>
+      <div class="muted" style="margin-bottom:14px">{{ user.email }}</div>
+      <div class="chips" style="justify-content:center;margin-bottom:20px">
+        <span class="chip brand">Cód. {{ user.student.code }}</span>
+        <span class="chip">Semestre {{ user.student.semester }}</span>
+      </div>
+
+      <div style="text-align:left;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:16px">
+        <div class="row-center" style="margin-bottom:8px">
+          <span style="font-size:13px;font-weight:700;color:var(--ink-soft)">Completitud del perfil</span>
+          <span class="chip {% if pct == 100 %}good{% else %}brand{% endif %}" style="margin:0">{{ pct }}%</span>
+        </div>
+        <div class="progress" style="margin-bottom:12px"><i style="width:{{ pct }}%"></i></div>
+        <div class="muted" style="font-size:12.5px">
+          {% if user.student.cv %}
+            <span style="color:var(--good);font-weight:600">✓ Hoja de vida en PDF cargada</span> — Ya puedes postularte a ofertas.
+          {% else %}
+            <span style="color:var(--gold);font-weight:600">⚠ Falta adjuntar tu hoja de vida en PDF</span> para poder postularte.
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card form" style="padding:32px">
+    <h2 style="margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--line)">Información personal, académica y preferencias (HU02 / HU12)</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div style="background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:20px;">
+        <h3 style="margin-top:0;font-size:15px;color:var(--brand-deep)">1. Datos personales y de contacto</h3>
+        <p>{{ form.name.label_tag }} {{ form.name }} {{ form.name.errors }}</p>
+        <p>{{ form.phone.label_tag }} {{ form.phone }} {{ form.phone.errors }}</p>
+      </div>
+
+      <div style="background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:20px;">
+        <h3 style="margin-top:0;font-size:15px;color:var(--brand-deep)">2. Formación y competencias</h3>
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;">
+          <p>{{ form.program.label_tag }} {{ form.program }} {{ form.program.errors }}</p>
+          <p>{{ form.semester.label_tag }} {{ form.semester }} {{ form.semester.errors }}</p>
+        </div>
+        <p>{{ form.skills.label_tag }} {{ form.skills }} <span class="helptext">Ej. Python, Java, SQL, Análisis financiero, React, Redes...</span> {{ form.skills.errors }}</p>
+        <p>{{ form.languages.label_tag }} {{ form.languages }} <span class="helptext">Ej. Español nativo, Inglés B2, Francés básico...</span> {{ form.languages.errors }}</p>
+        <p>{{ form.experience.label_tag }} {{ form.experience }} {{ form.experience.errors }}</p>
+      </div>
+
+      <div style="background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:20px;">
+        <h3 style="margin-top:0;font-size:15px;color:var(--brand-deep)">3. Hoja de vida (PDF obligatorio para postularse)</h3>
+        <p>{{ form.cv.label_tag }} {{ form.cv }} {{ form.cv.errors }}</p>
+        {% if user.student.cv %}
+        <div style="background:var(--brand-soft);border:1px solid var(--brand-border);border-radius:10px;padding:12px 16px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <span style="font-size:13.5px;color:var(--brand-deep);font-weight:600">
+            📄 Hoja de vida cargada actualmente: {{ user.student.cv.name|slice:"5:" }}
+          </span>
+          <a class="btn sm ghost" href="{{ user.student.cv.url }}" target="_blank">Abrir PDF actual</a>
+        </div>
+        {% endif %}
+      </div>
+
+      <div style="background:#f0fdfa;border:1px solid var(--brand-border);border-radius:12px;padding:18px;margin-bottom:24px;">
+        <h3 style="margin-top:0;font-size:15px;color:var(--brand-dark)">4. Áreas de interés y alertas automáticas (HU12)</h3>
+        <p style="font-size:13px;color:var(--ink-soft);margin-bottom:12px">
+          Selecciona las áreas en las que te interesa realizar prácticas o empleo. Recibirás avisos en tu panel y correo cuando se publiquen ofertas afines:
+        </p>
+        <div style="margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:8px;border:1px solid var(--line);">
+          {{ form.interests }}
+        </div>
+        <label style="display:flex;align-items:center;gap:10px;font-weight:600;font-size:13.5px;cursor:pointer;">
+          {{ form.notify_new_offers }} {{ form.notify_new_offers.label }}
+        </label>
+      </div>
+
+      <button class="btn lg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+        Guardar cambios del perfil
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+# Entornos virtuales
+venv/
+env/
+ENV/
+
+# Variables de entorno locales
+.env
+.env.*
+!.env.example
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Bases de datos y resultados locales
+*.sqlite3
+*.sqlite3-*
+*.log
+.coverage
+htmlcov/
+
+# Archivos multimedia subidos o locales
+media/*
+!media/.gitkeep
+!media/cvs/
+media/cvs/*
+!media/cvs/.gitkeep
+
+# IDEs
+.vscode/
+.idea/
+*.swp

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Mis postulaciones · PPOL{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Mis postulaciones</h1>
+    <p class="page-subtitle">Haz seguimiento en tiempo real al proceso de selección de tus candidaturas.</p>
+  </div>
+  <a class="btn ghost" href="{% url 'offers' %}">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    Buscar más ofertas
+  </a>
+</div>
+
+{% for a in apps %}
+<div class="card">
+  <div class="row-center">
+    <div style="display:flex;gap:16px;align-items:center">
+      <div class="avatar">{{ a.offer.company.name|slice:":2" }}</div>
+      <div>
+        <h2 style="margin:0;font-size:18px">
+          <a href="{% url 'offer_detail' a.offer.pk %}" style="color:var(--ink)">{{ a.offer.title }}</a>
+        </h2>
+        <div class="muted" style="margin-top:2px">
+          <strong style="color:var(--ink-soft)">{{ a.offer.company.name }}</strong> · {{ a.offer.city }} · Postulación enviada el {{ a.created|date:"d/m/Y" }}
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="chip {% if a.status == 'ACE' %}good{% elif a.status == 'REC' or a.status == 'RET' %}bad{% elif a.status == 'ENT' or a.status == 'PRE' %}brand{% else %}accent{% endif %}" style="font-size:13px;padding:6px 14px">
+        {{ a.get_status_display }}
+      </span>
+      {% if not a.is_final %}
+      <form method="post" action="{% url 'withdraw' a.pk %}" onsubmit="return confirm('¿Estás seguro de retirar tu postulación a esta oferta?');">
+        {% csrf_token %}
+        <button class="bad sm">Retirar</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="timeline">
+    <span class="muted" style="font-size:12px;font-weight:700;margin-right:4px">Trazabilidad:</span>
+    {% for l in a.log.all %}
+      <span class="timeline-step {% if forloop.last %}last{% endif %}">
+        {{ l.get_status_display }}
+        <span style="opacity:0.7;font-weight:400">({{ l.created|date:"d/m H:i" }})</span>
+      </span>
+      {% if not forloop.last %}<span class="timeline-arrow">→</span>{% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% empty %}
+<div class="empty-state">
+  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+  <h3>Aún no tienes postulaciones registradas</h3>
+  <p>Explora las convocatorias disponibles y postúlate con un clic usando tu perfil.</p>
+  <a class="btn" href="{% url 'offers' %}">Explorar ofertas disponibles</a>
+</div>
+{% endfor %}
+{% endblock %}

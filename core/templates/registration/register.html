@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{% if kind == "estudiante" %}Registro de Estudiante{% else %}Registro de Empresa{% endif %} · PPOL{% endblock %}
+{% block content %}
+<style>
+.reg-container {
+  max-width: 560px;
+  margin: 8px auto;
+}
+.role-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: #e2e8f0;
+  padding: 5px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+.role-tab {
+  text-align: center;
+  padding: 10px 14px;
+  border-radius: 9px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink-soft);
+  transition: all 0.15s ease;
+}
+.role-tab.active {
+  background: #fff;
+  color: var(--brand-dark);
+  box-shadow: var(--shadow-sm);
+}
+</style>
+
+<div class="reg-container">
+  <div class="role-tabs">
+    <a href="{% url 'register' 'estudiante' %}" class="role-tab {% if kind == 'estudiante' %}active{% endif %}">
+      Cuenta Estudiante
+    </a>
+    <a href="{% url 'register' 'empresa' %}" class="role-tab {% if kind != 'estudiante' %}active{% endif %}">
+      Cuenta Empresa
+    </a>
+  </div>
+
+  <div class="card" style="padding:32px">
+    <h1 style="font-size:24px;margin-bottom:6px">
+      {% if kind == "estudiante" %}Registro de estudiante{% else %}Registro de empresa aliada{% endif %}
+    </h1>
+    <p class="muted" style="margin:0 0 24px">
+      {% if kind == "estudiante" %}
+        Crea tu perfil académico para postularte a prácticas profesionales y ofertas de empleo.
+      {% else %}
+        Registra tu organización. Una vez validada por el administrador podrás publicar convocatorias.
+      {% endif %}
+    </p>
+
+    <form method="post" class="form">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="btn lg block" style="margin-top:8px">
+        Crear cuenta {% if kind == "estudiante" %}de estudiante{% else %}empresarial{% endif %}
+      </button>
+    </form>
+
+    <div style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)" class="muted">
+      ¿Ya tienes una cuenta registrada? <a href="{% url 'login' %}" style="font-weight:700">Inicia sesión aquí</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

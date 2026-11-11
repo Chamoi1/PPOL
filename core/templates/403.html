@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Acceso restringido · PPOL{% endblock %}
+{% block content %}
+<div class="empty-state" style="padding:60px 24px;max-width:600px;margin:40px auto;border-color:var(--bad-border);">
+  <div style="font-size:72px;font-weight:800;color:var(--bad);line-height:1;margin-bottom:12px;">403</div>
+  <h2 style="margin:0 0 10px;font-size:24px;">Acceso restringido</h2>
+  <p style="color:var(--muted);font-size:15px;margin-bottom:24px;">
+    No tienes permisos suficientes o tu rol actual no permite acceder a este recurso institucional.
+  </p>
+  <a class="btn lg" href="{% url 'home' %}">
+    Volver a mi panel principal
+  </a>
+</div>
+{% endblock %}
