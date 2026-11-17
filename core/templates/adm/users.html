@@ -7,8 +7,7 @@
     <p class="page-subtitle">Activa, suspende o elimina cuentas de estudiantes, empresas y administradores del sistema.</p>
   </div>
   <a class="btn ghost" href="{% url 'admin:core_user_changelist' %}" target="_blank">
-    Abrir en Django Admin
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+    <i class="bi bi-box-arrow-up-right me-1"></i> Abrir en Django Admin
   </a>
 </div>
 
@@ -26,7 +25,9 @@
       <option value="active" {% if g.status == 'active' %}selected{% endif %}>Solo activos</option>
       <option value="inactive" {% if g.status == 'inactive' %}selected{% endif %}>Solo suspendidos</option>
     </select>
-    <button type="submit">Buscar</button>
+    <button type="submit">
+      <i class="bi bi-search me-1"></i> Buscar
+    </button>
     {% if g.q or g.role or g.status %}
       <a class="btn ghost" href="{% url 'admin_users' %}">Limpiar</a>
     {% endif %}
@@ -42,7 +43,7 @@
         <th>Detalle del Perfil</th>
         <th>Fecha Registro</th>
         <th>Estado</th>
-        <th style="text-align:right">Acciones (HU10)</th>
+        <th style="text-align:right">Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -54,8 +55,8 @@
               {{ u.first_name|default:u.email|slice:":2" }}
             </div>
             <div>
-              <strong style="display:block;color:var(--ink)">{{ u.first_name|default:u.username }}</strong>
-              <span class="muted" style="font-size:12.5px">{{ u.email }}</span>
+              <strong style="display:block;color:var(--ink);font-size:14px">{{ u.first_name|default:u.username }}</strong>
+              <span class="muted" style="font-size:12px">{{ u.email }}</span>
             </div>
           </div>
         </td>
@@ -68,15 +69,19 @@
           {% if u.role == 'EST' and u.student %}
             <span>Cód: <strong>{{ u.student.code }}</strong> · {{ u.student.program }} (Sem. {{ u.student.semester }})</span>
             {% if u.student.cv %}
-              <div style="margin-top:3px;"><a href="{{ u.student.cv.url }}" target="_blank" style="font-size:11.5px;color:var(--brand-dark);font-weight:700;">📄 Ver Hoja de Vida</a></div>
+              <div style="margin-top:2px;">
+                <a href="{{ u.student.cv.url }}" target="_blank" style="font-size:11.5px;color:var(--accent);font-weight:600;">
+                  <i class="bi bi-file-earmark-pdf text-danger me-1"></i> Ver Hoja de Vida
+                </a>
+              </div>
             {% endif %}
           {% elif u.role == 'EMP' and u.company %}
             <span>NIT: <strong>{{ u.company.nit }}</strong> · {{ u.company.sector }} · {{ u.company.contact }}</span>
           {% else %}
-            <span class="muted">Superadministrador del sistema</span>
+            <span class="muted">Superadministrador</span>
           {% endif %}
         </td>
-        <td style="font-size:13px;color:var(--muted)">
+        <td style="font-size:12.5px;color:var(--muted)">
           {{ u.date_joined|date:"d/m/Y H:i" }}
         </td>
         <td>
@@ -92,20 +97,16 @@
             <form method="post" action="{% url 'admin_user_toggle' u.pk %}" style="margin:0">
               {% csrf_token %}
               <button class="sm {% if u.is_active %}ghost{% else %}good{% endif %}" title="Cambiar estado">
-                {% if u.is_active %}
-                  Suspender
-                {% else %}
-                  Reactivar
-                {% endif %}
+                {% if u.is_active %}Suspender{% else %}Reactivar{% endif %}
               </button>
             </form>
 
-            <!-- Eliminar con confirmación -->
+            <!-- Eliminar -->
             {% if u != request.user %}
-            <form method="post" action="{% url 'admin_user_delete' u.pk %}" onsubmit="return confirm('¿Seguro que deseas eliminar definitivamente este usuario ({{ u.email }})?');" style="margin:0">
+            <form method="post" action="{% url 'admin_user_delete' u.pk %}" onsubmit="return confirm('¿Confirmas la eliminación permanente del usuario {{ u.email }}?');" style="margin:0">
               {% csrf_token %}
               <button class="sm bad" title="Eliminar cuenta">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                <i class="bi bi-trash"></i>
               </button>
             </form>
             {% endif %}

@@ -33,7 +33,7 @@ El sistema implementa una arquitectura desacoplada basada en el patrón **MVT (M
 
 ```
 [ FRONTEND ]
-HTML5 Semántico + CSS3 Liquid Glass + JavaScript ES6
+HTML5 Semántico + Bootstrap 5.3 + CSS3 Minimalista Enterprise + Bootstrap Icons
 (Validación cliente, feedback reactivo, microinteracciones, tabs dinámicos)
               │
               ▼ (HTTP / Fetch / Form POST con CSRF)
@@ -78,7 +78,7 @@ La matriz documenta módulos disponibles; el grado de cumplimiento de la asignat
 - **Lenguaje:** Python 3.13 / 3.x
 - **Framework Web:** Django (arquitectura MVT)
 - **Base de Datos:** MySQL/MariaDB de XAMPP con llaves primarias, foráneas e integridad referencial (SQLite opcional para desarrollo local)
-- **Frontend:** HTML5 semántico, CSS3 personalizado con estilo *Liquid Glass*, tipografía Google Fonts (Hanken Grotesk), JavaScript nativo (ES6) para interactividad y validaciones
+- **Frontend:** HTML5 semántico, Bootstrap 5.3, diseño UI minimalista y profesional para software corporativo/universitario (paleta neutral pizarra `#0f172a`, bordes nítidos, sin clichés de IA), tipografía Google Fonts (Inter), Bootstrap Icons y JavaScript nativo (ES6) para interactividad y validaciones dinámicas.
 - **Bibliotecas Complementarias:**
   - `openpyxl`: Generación y formateo de libros de cálculo Excel (.xlsx) con estilos y paleta institucional.
   - `reportlab`: Renderizado vectorial de documentos PDF oficiales con encabezados, tablas y KPIs.
@@ -90,7 +90,7 @@ La matriz documenta módulos disponibles; el grado de cumplimiento de la asignat
 
 ### Prerrequisitos:
 - Python 3.10 o superior instalado en el equipo.
-- XAMPP con MySQL/MariaDB activo para la configuración predeterminada.
+- XAMPP con MySQL/MariaDB activo si se elige ese motor. Para desarrollo local también se puede usar SQLite sin instalar XAMPP.
 
 ### Paso 1: Abrir el proyecto
 ```bash
@@ -121,19 +121,25 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Paso 4: Preparar XAMPP y la base de datos
-1. Abre XAMPP Control Panel e inicia **MySQL**.
-2. En phpMyAdmin (`http://localhost/phpmyadmin`) importa [`database/create_database.sql`](./database/create_database.sql) o ejecuta ese script en la pestaña **SQL** para crear `ppol_db`.
-3. Copia la plantilla de variables de entorno y revisa los datos de conexión:
-   ```powershell
-   Copy-Item .env.example .env
-   ```
-   En Linux / macOS usa `cp .env.example .env`.
-4. Ajusta `DB_USER`, `DB_PASSWORD`, `DB_HOST` y `DB_PORT` en `.env` si tu instalación de XAMPP no usa los valores predeterminados.
+### Paso 4: Elegir y configurar la base de datos
+Si todavía no tienes un archivo `.env`, crea uno a partir de la plantilla:
+```powershell
+Copy-Item .env.example .env
+```
+En Linux / macOS usa `cp .env.example .env`.
 
-La aplicación usa MySQL/MariaDB de XAMPP por defecto. Para desarrollo local con SQLite, configura `DB_ENGINE=sqlite` en `.env`.
+Elige **una** de estas opciones en `.env`:
+
+- **SQLite (recomendado para iniciar localmente):** configura `DB_ENGINE=sqlite`. No requiere XAMPP ni crear una base manualmente; Django creará `db.sqlite3` al aplicar las migraciones.
+- **MySQL/MariaDB con XAMPP:** deja `DB_ENGINE=mysql`, inicia **MySQL** desde el panel de XAMPP y crea `ppol_db` en phpMyAdmin (`http://localhost/phpmyadmin`) ejecutando [`database/create_database.sql`](./database/create_database.sql). Si tu instalación no usa los valores predeterminados, ajusta `DB_USER`, `DB_PASSWORD`, `DB_HOST` y `DB_PORT` en `.env`.
 
 ### Paso 5: Aplicar migraciones y cargar datos de demostración
+En Windows PowerShell, habilita la salida UTF-8 para que los símbolos del comando `seed` se impriman correctamente:
+```powershell
+$env:PYTHONIOENCODING = "utf-8"
+```
+
+Luego ejecuta:
 ```powershell
 python manage.py migrate
 python manage.py seed
@@ -141,11 +147,11 @@ python manage.py seed
 > `seed` crea o actualiza las cuentas de demostración. No lo ejecutes sobre una base de producción.
 
 ### Paso 6: Ejecutar el servidor de desarrollo
-```bash
+```powershell
 python manage.py runserver
 ```
 
-Abre en tu navegador preferido: **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
+Abre en tu navegador: **[http://127.0.0.1:8000](http://127.0.0.1:8000)**. Si aparece un error de conexión a `127.0.0.1:3306`, MySQL no está activo; inicia MySQL en XAMPP o cambia `DB_ENGINE=sqlite` en `.env`.
 
 ---
 

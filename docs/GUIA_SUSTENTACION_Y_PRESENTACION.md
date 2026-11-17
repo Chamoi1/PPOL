@@ -67,7 +67,7 @@
 ```
                   ┌────────────────────────────────────────────────────────┐
                   │                 FRONTEND (Presentación)                │
-                  │  HTML5 Semántico + CSS3 Liquid Glass + JavaScript ES6  │
+                  │  HTML5 Semántico + Bootstrap 5.3 + CSS Minimalista     │
                   │  • Formularios validados en cliente (PDF, campos)      │
                   │  • Interacciones reactivas, modales y tabs dinámicos   │
                   └─────────────────────────┬──────────────────────────────┘

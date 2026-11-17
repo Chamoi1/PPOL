@@ -2,52 +2,39 @@
 {% block title %}Indicadores y reportes · PPOL{% endblock %}
 {% block content %}
 <style>
-/* Liquid Glass Analytics & Interactive History */
+/* Minimalist Analytics & History */
 .kpi-card.clickable {
   cursor: pointer;
   position: relative;
-  overflow: hidden;
+  transition: all 0.15s ease;
 }
-.kpi-card.clickable::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(20, 184, 166, 0.12) 0%, transparent 60%);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-.kpi-card.clickable:hover, .kpi-card.clickable.active-kpi {
-  transform: translateY(-3px);
-  border-color: rgba(20, 184, 166, 0.65);
-  box-shadow: var(--glass-shadow-hover);
+.kpi-card.clickable:hover {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-sm);
 }
 .kpi-card.clickable.active-kpi {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 253, 250, 0.80) 100%);
-  box-shadow: 0 14px 32px -6px rgba(13, 148, 136, 0.2), inset 0 0 0 1.5px rgba(20, 184, 166, 0.55);
-}
-.kpi-card.clickable:hover::before, .kpi-card.clickable.active-kpi::before {
-  opacity: 1;
+  border-color: var(--ink);
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
 }
 .kpi-hint {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   font-size: 11.5px;
-  font-weight: 700;
-  color: var(--brand-dark);
+  font-weight: 500;
+  color: var(--accent);
   margin-top: 6px;
 }
 
-/* Liquid Glass History Section */
+/* History Section */
 .history-shell {
-  margin-top: 28px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.76) 0%, rgba(248, 250, 252, 0.56) 100%);
-  backdrop-filter: blur(26px) saturate(190%);
-  -webkit-backdrop-filter: blur(26px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 22px;
-  padding: 26px;
-  box-shadow: var(--glass-shadow);
+  margin-top: 24px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow-xs);
 }
 .history-header {
   display: flex;
@@ -55,193 +42,176 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 16px;
-  margin-bottom: 22px;
-  padding-bottom: 18px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--line);
 }
 .glass-tabs {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 6px;
-  background: rgba(15, 23, 42, 0.06);
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  padding: 5px;
-  border-radius: 14px;
-  backdrop-filter: blur(14px);
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  padding: 4px;
+  border-radius: var(--radius-sm);
 }
 .glass-tab {
   background: transparent;
-  border: 1px solid transparent;
-  color: var(--ink-soft);
-  font-size: 13.5px;
-  font-weight: 700;
-  padding: 8px 15px;
-  border-radius: 10px;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 6px;
   cursor: pointer;
   box-shadow: none;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
+  gap: 6px;
+  transition: all 0.15s ease;
 }
 .glass-tab:hover {
-  background: rgba(255, 255, 255, 0.65);
-  color: var(--brand-deep);
-  transform: none;
-  box-shadow: none;
+  color: var(--ink);
+  background: #e2e8f0;
 }
 .glass-tab.active {
-  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 60%, #0f766e 100%);
-  color: #fff;
-  border-color: rgba(153, 246, 228, 0.55);
-  box-shadow: 0 6px 16px -3px rgba(13, 148, 136, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  background: var(--ink);
+  color: #ffffff;
+  font-weight: 600;
 }
 .glass-tab .tab-badge {
-  background: rgba(13, 148, 136, 0.14);
-  color: var(--brand-deep);
-  padding: 1px 8px;
+  background: rgba(15, 23, 42, 0.08);
+  color: var(--ink-soft);
+  padding: 1px 7px;
   border-radius: 999px;
-  font-size: 11.5px;
+  font-size: 11px;
 }
 .glass-tab.active .tab-badge {
-  background: rgba(255, 255, 255, 0.24);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 }
 
 .tab-pane {
   display: none;
-  animation: fadeSlide 0.25s ease;
 }
 .tab-pane.active {
   display: block;
 }
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
-/* Timeline / History Feed Items */
+/* Timeline Items */
 .history-timeline {
   position: relative;
-  padding-left: 26px;
+  padding-left: 20px;
 }
 .history-timeline::before {
   content: "";
   position: absolute;
-  left: 9px;
+  left: 6px;
   top: 8px;
   bottom: 8px;
   width: 2px;
-  background: linear-gradient(180deg, #14b8a6 0%, rgba(13, 148, 136, 0.2) 100%);
+  background: var(--line);
   border-radius: 999px;
 }
 .history-item {
   position: relative;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0.64) 100%);
-  backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.92);
-  border-radius: 16px;
-  padding: 18px 22px;
-  margin-bottom: 14px;
-  box-shadow: 0 6px 20px -4px rgba(15, 23, 42, 0.06), inset 0 1px 0 #fff;
-  transition: all 0.2s ease;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-xs);
+  transition: border-color 0.15s ease;
 }
 .history-item:hover {
-  border-color: rgba(20, 184, 166, 0.55);
-  box-shadow: var(--glass-shadow-hover);
-  transform: translateX(3px);
+  border-color: var(--line-strong);
 }
 .history-item::before {
   content: "";
   position: absolute;
-  left: -22px;
-  top: 24px;
-  width: 12px;
-  height: 12px;
+  left: -19px;
+  top: 22px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
-  border: 2.5px solid #fff;
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.25);
+  background: var(--ink);
+  border: 2px solid #ffffff;
 }
 
 /* Details drawer inside history cards */
 details.glass-drawer {
-  margin-top: 12px;
+  margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px dashed rgba(148, 163, 184, 0.4);
+  border-top: 1px dashed var(--line);
 }
 details.glass-drawer summary {
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--brand-dark);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent);
   user-select: none;
   list-style: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 details.glass-drawer summary::-webkit-details-marker { display: none; }
 .drawer-body {
-  margin-top: 10px;
-  padding: 14px 16px;
-  border-radius: 12px;
-  background: rgba(240, 253, 250, 0.55);
-  border: 1px solid rgba(45, 212, 191, 0.35);
-  font-size: 13.5px;
+  margin-top: 8px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  font-size: 13px;
   color: var(--ink-soft);
 }
 
 /* Company showcase cards */
 .company-history-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.64) 100%);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.92);
-  border-radius: 18px;
-  padding: 22px;
-  margin-bottom: 16px;
-  box-shadow: var(--glass-shadow);
-  transition: all 0.2s ease;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-xs);
+  transition: border-color 0.15s ease;
 }
 .company-history-card:hover {
-  border-color: rgba(20, 184, 166, 0.55);
-  box-shadow: var(--glass-shadow-hover);
+  border-color: var(--line-strong);
 }
 .mini-offer-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 10px;
   margin-top: 14px;
   padding-top: 14px;
   border-top: 1px solid var(--line);
 }
 .mini-offer-pill {
-  background: rgba(255, 255, 255, 0.76);
-  border: 1px solid rgba(148, 163, 184, 0.32);
-  border-radius: 12px;
-  padding: 12px 14px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 </style>
 
 <div class="page-header">
   <div>
     <h1>Indicadores y analítica institucional</h1>
-    <p class="page-subtitle">Monitorea en tiempo real el historial de ofertas, empresas activas, postulaciones y vinculaciones.</p>
+    <p class="page-subtitle">Monitoreo en tiempo real de convocatorias, empresas aliadas, postulaciones y contrataciones.</p>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-    <a class="btn" href="?{{ request.GET.urlencode }}{% if request.GET %}&{% endif %}export=xlsx" style="background:#059669;border-color:#10b981;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-      Descargar Excel (.xlsx)
+    <a class="btn" href="?{{ request.GET.urlencode }}{% if request.GET %}&{% endif %}export=xlsx" style="background:#166534;border-color:#166534;">
+      <i class="bi bi-file-earmark-excel me-1"></i> Exportar Excel (.xlsx)
     </a>
-    <a class="btn" href="?{{ request.GET.urlencode }}{% if request.GET %}&{% endif %}export=pdf" style="background:#dc2626;border-color:#ef4444;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M10 12h4"></path><path d="M10 16h4"></path></svg>
-      Descargar PDF (.pdf)
+    <a class="btn" href="?{{ request.GET.urlencode }}{% if request.GET %}&{% endif %}export=pdf" style="background:#991b1b;border-color:#991b1b;">
+      <i class="bi bi-file-earmark-pdf me-1"></i> Exportar PDF (.pdf)
     </a>
     <a class="btn ghost" href="?{{ request.GET.urlencode }}{% if request.GET %}&{% endif %}export=csv" title="Formato plano CSV">
-      CSV
+      <i class="bi bi-filetype-csv me-1"></i> CSV
     </a>
   </div>
 </div>
@@ -249,11 +219,11 @@ details.glass-drawer summary::-webkit-details-marker { display: none; }
 <div class="filter-panel">
   <form class="bar" method="get">
     <div style="display:flex;align-items:center;gap:6px">
-      <span class="muted" style="font-weight:700">Desde</span>
+      <span class="muted" style="font-weight:600;font-size:12.5px">Desde</span>
       <input type="date" name="desde" value="{{ g.desde }}">
     </div>
     <div style="display:flex;align-items:center;gap:6px">
-      <span class="muted" style="font-weight:700">Hasta</span>
+      <span class="muted" style="font-weight:600;font-size:12.5px">Hasta</span>
       <input type="date" name="hasta" value="{{ g.hasta }}">
     </div>
     <select name="empresa" style="min-width:170px">
@@ -277,44 +247,44 @@ details.glass-drawer summary::-webkit-details-marker { display: none; }
   <div class="kpi-card clickable active-kpi" id="kpi-ofertas" onclick="switchHistoryTab('ofertas', true)">
     <div>
       <b>{{ data.ofertas }}</b>
-      <span class="muted" style="font-weight:600;display:block">Ofertas registradas</span>
-      <span class="kpi-hint">Ver historial de ofertas ↓</span>
+      <span class="muted" style="font-weight:500;display:block">Ofertas registradas</span>
+      <span class="kpi-hint">Ver historial ↓</span>
     </div>
-    <div class="kpi-icon" style="background:var(--brand-soft);color:var(--brand-dark)">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+    <div class="kpi-icon">
+      <i class="bi bi-briefcase"></i>
     </div>
   </div>
 
   <div class="kpi-card clickable" id="kpi-empresas" onclick="switchHistoryTab('empresas', true)">
     <div>
       <b>{{ data.empresas_activas }}</b>
-      <span class="muted" style="font-weight:600;display:block">Empresas con ofertas</span>
-      <span class="kpi-hint">Ver empresas y vacantes ↓</span>
+      <span class="muted" style="font-weight:500;display:block">Empresas con ofertas</span>
+      <span class="kpi-hint">Ver empresas ↓</span>
     </div>
-    <div class="kpi-icon" style="background:var(--accent-soft);color:var(--accent)">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+    <div class="kpi-icon">
+      <i class="bi bi-building"></i>
     </div>
   </div>
 
   <div class="kpi-card clickable" id="kpi-postulaciones" onclick="switchHistoryTab('postulaciones', true)">
     <div>
       <b>{{ data.postulaciones }}</b>
-      <span class="muted" style="font-weight:600;display:block">Postulaciones recibidas</span>
+      <span class="muted" style="font-weight:500;display:block">Postulaciones</span>
       <span class="kpi-hint">Ver trazabilidad ↓</span>
     </div>
-    <div class="kpi-icon" style="background:rgba(99, 102, 241, 0.14);color:#4f46e5">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+    <div class="kpi-icon">
+      <i class="bi bi-send"></i>
     </div>
   </div>
 
   <div class="kpi-card clickable" id="kpi-vinculaciones" onclick="switchHistoryTab('vinculaciones', true)">
     <div>
       <b>{{ data.vinculaciones }}</b>
-      <span class="muted" style="font-weight:600;display:block">Vinculaciones (Aceptadas)</span>
-      <span class="kpi-hint">Ver estudiantes vinculados ↓</span>
+      <span class="muted" style="font-weight:500;display:block">Vinculaciones (Aceptadas)</span>
+      <span class="kpi-hint">Ver vinculados ↓</span>
     </div>
-    <div class="kpi-icon" style="background:var(--good-soft);color:var(--good)">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+    <div class="kpi-icon">
+      <i class="bi bi-check2-circle text-success"></i>
     </div>
   </div>
 </div>
@@ -322,69 +292,65 @@ details.glass-drawer summary::-webkit-details-marker { display: none; }
 <!-- Charts Row -->
 <div class="grid-2">
   <div class="card">
-    <h2 style="margin-bottom:16px">Áreas con mayor demanda</h2>
+    <h2 style="font-size:16px;font-weight:600;margin-bottom:14px">Áreas con mayor demanda</h2>
     {% for a in top_areas %}
-      <div style="margin-bottom:14px">
-        <div class="row-center" style="margin-bottom:5px;font-size:14px">
-          <span style="font-weight:600;color:var(--ink-soft)">{{ a.offer__area__name }}</span>
+      <div style="margin-bottom:12px">
+        <div class="row-center" style="margin-bottom:4px;font-size:13px">
+          <span style="font-weight:500;color:var(--ink-soft)">{{ a.offer__area__name }}</span>
           <span class="chip brand" style="margin:0">{{ a.n }} {% if a.n == 1 %}postulación{% else %}postulaciones{% endif %}</span>
         </div>
-        <div class="progress" style="height:9px">
+        <div class="progress" style="height:7px">
           <i style="width:{% widthratio a.n data.postulaciones|default:1 100 %}%"></i>
         </div>
       </div>
     {% empty %}
-      <p class="muted">Sin datos registrados para este periodo.</p>
+      <p class="muted" style="font-size:13px">Sin datos registrados para este periodo.</p>
     {% endfor %}
   </div>
 
   <div class="card">
-    <h2 style="margin-bottom:16px">Programas académicos con más postulaciones</h2>
+    <h2 style="font-size:16px;font-weight:600;margin-bottom:14px">Programas académicos con más postulaciones</h2>
     {% for p in top_programs %}
-      <div style="margin-bottom:14px">
-        <div class="row-center" style="margin-bottom:5px;font-size:14px">
-          <span style="font-weight:600;color:var(--ink-soft)">{{ p.student__student__program }}</span>
+      <div style="margin-bottom:12px">
+        <div class="row-center" style="margin-bottom:4px;font-size:13px">
+          <span style="font-weight:500;color:var(--ink-soft)">{{ p.student__student__program }}</span>
           <span class="chip accent" style="margin:0">{{ p.n }} {% if p.n == 1 %}postulación{% else %}postulaciones{% endif %}</span>
         </div>
-        <div class="progress" style="height:9px">
-          <i style="width:{% widthratio p.n data.postulaciones|default:1 100 %}%;background:linear-gradient(90deg,#6366f1 0%,#4f46e5 100%)"></i>
+        <div class="progress" style="height:7px">
+          <i style="width:{% widthratio p.n data.postulaciones|default:1 100 %}%;background:var(--ink)"></i>
         </div>
       </div>
     {% empty %}
-      <p class="muted">Sin datos registrados para este periodo.</p>
+      <p class="muted" style="font-size:13px">Sin datos registrados para este periodo.</p>
     {% endfor %}
   </div>
 </div>
 
-<!-- Interactive Liquid Glass History Explorer -->
+<!-- Detailed History Explorer -->
 <div class="history-shell" id="historial-explorer">
   <div class="history-header">
     <div>
-      <h2 style="margin:0;font-size:22px;color:var(--ink)">
+      <h2 style="margin:0;font-size:18px;font-weight:700;color:var(--ink)">
         Explorador e Historial Detallado
       </h2>
-      <div class="muted">Consulta el registro histórico de convocatorias, organizaciones activas y procesos de selección.</div>
+      <div class="muted" style="font-size:13px">Consulta el registro de convocatorias, organizaciones activas y procesos de selección.</div>
     </div>
 
     <div class="glass-tabs">
       <button type="button" class="glass-tab active" id="tab-btn-ofertas" onclick="switchHistoryTab('ofertas', false)">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-        Historial de Ofertas
+        <i class="bi bi-briefcase"></i> Ofertas
         <span class="tab-badge">{{ offers_list|length }}</span>
       </button>
       <button type="button" class="glass-tab" id="tab-btn-empresas" onclick="switchHistoryTab('empresas', false)">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-        Empresas con Ofertas
+        <i class="bi bi-building"></i> Empresas
         <span class="tab-badge">{{ active_companies|length }}</span>
       </button>
       <button type="button" class="glass-tab" id="tab-btn-postulaciones" onclick="switchHistoryTab('postulaciones', false)">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-        Postulaciones
+        <i class="bi bi-send"></i> Postulaciones
         <span class="tab-badge">{{ apps_list|length }}</span>
       </button>
       <button type="button" class="glass-tab" id="tab-btn-vinculaciones" onclick="switchHistoryTab('vinculaciones', false)">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-        Vinculaciones
+        <i class="bi bi-check2-circle"></i> Vinculaciones
         <span class="tab-badge">{{ placements_list|length }}</span>
       </button>
     </div>
@@ -397,11 +363,11 @@ details.glass-drawer summary::-webkit-details-marker { display: none; }
       {% for o in offers_list %}
       <div class="history-item">
         <div class="row-center">
-          <div style="display:flex;gap:14px;align-items:center">
+          <div style="display:flex;gap:12px;align-items:center">
             <div class="avatar">{{ o.company.name|slice:":2" }}</div>
             <div>
-              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-                <h3 style="margin:0;font-size:17px">{{ o.title }}</h3>
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                <h3 style="margin:0;font-size:16px;font-weight:600">{{ o.title }}</h3>
                 <span class="chip {% if o.status == 'ACT' %}good{% elif o.status == 'PEN' or o.status == 'PAU' %}warn{% else %}bad{% endif %}" style="margin:0">
                   {{ o.get_status_display }}
                 </span>
@@ -409,7 +375,7 @@ details.glass-drawer summary::-webkit-details-marker { display: none; }
                   {{ o.get_kind_display }}
                 </span>
               </div>
-              <div class="muted" style="margin-top:3px">
+              <div class="muted" style="margin-top:2px;font-size:12.5px">
                 <strong style="color:var(--ink-soft)">{{ o.company.name }}</strong> · {{ o.city }} · {{ o.get_mode_display }} · Área: <strong>{{ o.area.name }}</strong>
               </div>
             </div>
@@ -418,13 +384,13 @@ details.glass-drawer summary::-webkit-details-marker { display: none; }
           <div style="text-align:right">
             <div class="chips" style="margin:0;justify-content:flex-end">
               <span class="chip brand">
-                👥 {{ o.apps_count }} {% if o.apps_count == 1 %}postulante{% else %}postulantes{% endif %}
+                <i class="bi bi-people me-1"></i> {{ o.apps_count }} {% if o.apps_count == 1 %}postulante{% else %}postulantes{% endif %}
               </span>
               <span class="chip">
-                📅 Publicada {{ o.created|date:"d/m/Y" }}
+                Publicada {{ o.created|date:"d/m/Y" }}
               </span>
               <span class="chip warn">
-                ⏳ Cierra {{ o.deadline|date:"d/m/Y" }}
+                Cierra {{ o.deadline|date:"d/m/Y" }}
               </span>
             </div>
           </div>
@@ -433,8 +399,8 @@ details.glass-drawer summary::-webkit-details-marker { display: none; }
         <details class="glass-drawer">
           <summary>Ver descripción, requisitos y programas dirigidos ▾</summary>
           <div class="drawer-body">
-            <div style="margin-bottom:8px"><strong>Programas dirigidos:</strong> {{ o.programs }}</div>
-            <div style="margin-bottom:8px"><strong>Descripción:</strong> {{ o.description }}</div>
+            <div style="margin-bottom:6px"><strong>Programas dirigidos:</strong> {{ o.programs }}</div>
+            <div style="margin-bottom:6px"><strong>Descripción:</strong> {{ o.description }}</div>
             <div><strong>Requisitos:</strong> {{ o.requirements }}</div>
           </div>
         </details>
@@ -454,28 +420,28 @@ details.glass-drawer summary::-webkit-details-marker { display: none; }
     {% for c in active_companies %}
     <div class="company-history-card">
       <div class="row-center">
-        <div style="display:flex;gap:16px;align-items:center">
-          <div class="avatar indigo" style="width:54px;height:54px;font-size:20px">{{ c.name|slice:":2" }}</div>
+        <div style="display:flex;gap:14px;align-items:center">
+          <div class="avatar indigo" style="width:48px;height:48px;font-size:18px">{{ c.name|slice:":2" }}</div>
           <div>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0;font-size:19px">{{ c.name }}</h3>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <h3 style="margin:0;font-size:17px;font-weight:600">{{ c.name }}</h3>
               <span class="chip {% if c.status == 'APR' %}good{% elif c.status == 'PEN' %}warn{% else %}bad{% endif %}" style="margin:0">
                 {{ c.get_status_display }}
               </span>
               <span class="chip" style="margin:0">Sector {{ c.sector }}</span>
             </div>
-            <div class="muted" style="margin-top:4px">
+            <div class="muted" style="margin-top:3px;font-size:12.5px">
               <strong>NIT:</strong> {{ c.nit }} · <strong>Contacto:</strong> {{ c.contact }} · <strong>Correo:</strong> {{ c.user.email }}
             </div>
           </div>
         </div>
 
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <span class="chip brand" style="font-size:13px;padding:6px 14px">
-            💼 {{ c.offers_count }} {% if c.offers_count == 1 %}oferta publicada{% else %}ofertas publicadas{% endif %}
+          <span class="chip brand">
+            <i class="bi bi-briefcase me-1"></i> {{ c.offers_count }} {% if c.offers_count == 1 %}oferta{% else %}ofertas{% endif %}
           </span>
-          <span class="chip accent" style="font-size:13px;padding:6px 14px">
-            📄 {{ c.apps_count }} {% if c.apps_count == 1 %}postulación recibida{% else %}postulaciones recibidas{% endif %}
+          <span class="chip accent">
+            <i class="bi bi-send me-1"></i> {{ c.apps_count }} {% if c.apps_count == 1 %}postulación{% else %}postulaciones{% endif %}
           </span>
         </div>
       </div>
@@ -483,16 +449,16 @@ details.glass-drawer summary::-webkit-details-marker { display: none; }
       <div class="mini-offer-list">
         {% for o in c.offers.all %}
         <div class="mini-offer-pill">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
-            <strong style="color:var(--ink);font-size:14px">{{ o.title }}</strong>
-            <span class="chip {% if o.status == 'ACT' %}good{% elif o.status == 'PEN' or o.status == 'PAU' %}warn{% else %}bad{% endif %}" style="margin:0;padding:2px 8px;font-size:11px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px">
+            <strong style="color:var(--ink);font-size:13px">{{ o.title }}</strong>
+            <span class="chip {% if o.status == 'ACT' %}good{% elif o.status == 'PEN' or o.status == 'PAU' %}warn{% else %}bad{% endif %}" style="margin:0;padding:2px 6px;font-size:10.5px">
               {{ o.get_status_display }}
             </span>
           </div>
-          <div class="muted" style="font-size:12.5px">
+          <div class="muted" style="font-size:12px">
             {{ o.get_kind_display }} · {{ o.get_mode_display }} · {{ o.city }}
           </div>
-          <div class="muted" style="font-size:12px">
+          <div class="muted" style="font-size:11.5px">
             Área: {{ o.area.name }} · Cierre: {{ o.deadline|date:"d/m/Y" }}
           </div>
         </div>
@@ -514,15 +480,15 @@ details.glass-drawer summary::-webkit-details-marker { display: none; }
       {% for a in apps_list %}
       <div class="history-item">
         <div class="row-center">
-          <div style="display:flex;gap:14px;align-items:center">
+          <div style="display:flex;gap:12px;align-items:center">
             <div class="avatar indigo">{{ a.student.get_full_name|default:a.student.email|slice:":2" }}</div>
             <div>
-              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-                <h3 style="margin:0;font-size:16.5px">{{ a.student.get_full_name|default:a.student.email }}</h3>
-                <span class="muted">se postuló a</span>
-                <strong style="color:var(--brand-deep)">{{ a.offer.title }}</strong>
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                <h3 style="margin:0;font-size:15.5px;font-weight:600">{{ a.student.get_full_name|default:a.student.email }}</h3>
+                <span class="muted" style="font-size:13px">se postuló a</span>
+                <strong style="color:var(--ink);font-size:14px">{{ a.offer.title }}</strong>
               </div>
-              <div class="muted" style="margin-top:3px">
+              <div class="muted" style="margin-top:2px;font-size:12.5px">
                 <strong>Empresa:</strong> {{ a.offer.company.name }} · <strong>Programa:</strong> {{ a.student.student.program }} (Sem. {{ a.student.student.semester }}) · <strong>Fecha:</strong> {{ a.created|date:"d/m/Y H:i" }}
               </div>
             </div>
@@ -533,12 +499,12 @@ details.glass-drawer summary::-webkit-details-marker { display: none; }
           </span>
         </div>
 
-        <div class="timeline" style="margin-top:10px;padding-top:10px">
-          <span class="muted" style="font-size:12px;font-weight:700">Historial:</span>
+        <div class="timeline" style="margin-top:8px;padding-top:8px">
+          <span class="muted" style="font-size:11px;font-weight:600">Historial:</span>
           {% for l in a.log.all %}
             <span class="timeline-step {% if forloop.last %}last{% endif %}">
               {{ l.get_status_display }}
-              <span style="opacity:0.7;font-weight:400">({{ l.created|date:"d/m H:i" }})</span>
+              <span style="color:var(--muted);font-weight:400">({{ l.created|date:"d/m H:i" }})</span>
             </span>
             {% if not forloop.last %}<span class="timeline-arrow">→</span>{% endif %}
           {% endfor %}
@@ -561,14 +527,14 @@ details.glass-drawer summary::-webkit-details-marker { display: none; }
       {% for a in placements_list %}
       <div class="history-item">
         <div class="row-center">
-          <div style="display:flex;gap:14px;align-items:center">
+          <div style="display:flex;gap:12px;align-items:center">
             <div class="avatar" style="background:var(--good-soft);border-color:var(--good-border);color:var(--good)">✓</div>
             <div>
-              <h3 style="margin:0;font-size:17px">
+              <h3 style="margin:0;font-size:16px;font-weight:600">
                 {{ a.student.get_full_name|default:a.student.email }}
                 <span class="chip good" style="margin-left:6px">Vinculado(a) en {{ a.offer.company.name }}</span>
               </h3>
-              <div class="muted" style="margin-top:3px">
+              <div class="muted" style="margin-top:2px;font-size:12.5px">
                 <strong>Convocatoria:</strong> {{ a.offer.title }} ({{ a.offer.get_kind_display }}) · <strong>Programa:</strong> {{ a.student.student.program }}
               </div>
             </div>
@@ -581,7 +547,7 @@ details.glass-drawer summary::-webkit-details-marker { display: none; }
     {% else %}
       <div class="empty-state">
         <h3>Aún no hay vinculaciones cerradas en este filtro</h3>
-        <p>Cuando una empresa cambia el estado de un candidato a «Aceptada», aparecerá en este historial de éxito.</p>
+        <p>Cuando una empresa cambia el estado de un candidato a «Aceptada», aparecerá en este registro de contrataciones.</p>
       </div>
     {% endif %}
   </div>

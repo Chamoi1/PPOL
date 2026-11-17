@@ -3,8 +3,7 @@
 {% block content %}
 <div class="breadcrumb">
   <a href="{% url 'applicants' offer.pk %}">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-    Volver a postulantes de {{ offer.title }}
+    <i class="bi bi-arrow-left me-1"></i> Volver a postulantes de {{ offer.title }}
   </a>
 </div>
 
@@ -24,13 +23,13 @@
         {% for a in apps %}
         <th>
           <div style="display:flex;align-items:center;gap:10px">
-            <div class="avatar indigo" style="width:36px;height:36px;font-size:14px">{{ a.student.get_full_name|default:a.student.email|slice:":2" }}</div>
+            <div class="avatar indigo" style="width:36px;height:36px;font-size:13px">{{ a.student.get_full_name|default:a.student.email|slice:":2" }}</div>
             <div>
-              <div style="font-size:15px;color:var(--ink);text-transform:none;letter-spacing:0">
+              <div style="font-size:14px;color:var(--ink);text-transform:none;letter-spacing:0;font-weight:600">
                 {{ a.student.get_full_name|default:a.student.email }}
-                {% if a.favorite %}<span style="color:var(--gold)">★</span>{% endif %}
+                {% if a.favorite %}<span style="color:var(--warn)">★</span>{% endif %}
               </div>
-              <div class="muted" style="font-size:12px;font-weight:500;text-transform:none">{{ a.student.email }}</div>
+              <div class="muted" style="font-size:11.5px;font-weight:400;text-transform:none">{{ a.student.email }}</div>
             </div>
           </div>
         </th>
@@ -63,8 +62,8 @@
         {% for a in apps %}
         <td>
           <div style="display:flex;align-items:center;gap:10px">
-            <div class="progress" style="flex:1;max-width:120px"><i style="width:{{ a.student.student.completeness }}%"></i></div>
-            <strong>{{ a.student.student.completeness }}%</strong>
+            <div class="progress" style="flex:1;max-width:110px"><i style="width:{{ a.student.student.completeness }}%"></i></div>
+            <strong style="font-size:12.5px">{{ a.student.student.completeness }}%</strong>
           </div>
         </td>
         {% endfor %}
@@ -79,14 +78,16 @@
       </tr>
       <tr>
         <th>Nota interna</th>
-        {% for a in apps %}<td class="muted">{{ a.note|default:"Sin observaciones" }}</td>{% endfor %}
+        {% for a in apps %}<td class="muted">{{ a.notes|default:"Sin observaciones" }}</td>{% endfor %}
       </tr>
       <tr>
         <th>Hoja de vida</th>
         {% for a in apps %}
         <td>
           {% if a.student.student.cv %}
-            <a class="btn sm ghost" href="{{ a.student.student.cv.url }}" target="_blank">📄 Ver PDF</a>
+            <a class="btn sm ghost" href="{{ a.student.student.cv.url }}" target="_blank">
+              <i class="bi bi-file-earmark-pdf text-danger me-1"></i> Ver PDF
+            </a>
           {% else %}
             <span class="muted">No adjunta</span>
           {% endif %}
@@ -98,8 +99,9 @@
 </div>
 {% else %}
 <div class="empty-state">
+  <i class="bi bi-layout-split fs-1 text-muted"></i>
   <h3>No seleccionaste candidatos para comparar</h3>
-  <p>Marca la casilla de verificación junto a dos o más postulantes en la lista anterior.</p>
+  <p>Marca la casilla de verificación en dos o más candidatos en el listado para contrastarlos.</p>
   <a class="btn" href="{% url 'applicants' offer.pk %}">Volver a la lista de postulantes</a>
 </div>
 {% endif %}

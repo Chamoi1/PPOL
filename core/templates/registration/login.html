@@ -1,238 +1,666 @@
 {% extends "base.html" %}
-{% block title %}Iniciar sesión · PPOL{% endblock %}
+{% block title %}Iniciar sesión · PPOL UCC Montería{% endblock %}
+
 {% block content %}
 <style>
-.auth-shell {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.84) 0%, rgba(255, 255, 255, 0.58) 100%);
-  backdrop-filter: blur(26px) saturate(190%);
-  -webkit-backdrop-filter: blur(26px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: var(--glass-shadow);
-  margin: 12px 0;
+/* ==========================================================================
+   PPOL LOGIN — ATELIER ORBIT (FLOATING BENTO GLASS & ROLE MORPHING)
+   ========================================================================== */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none !important;
 }
-.auth-hero {
-  background: linear-gradient(145deg, rgba(15, 23, 42, 0.94) 0%, rgba(19, 78, 74, 0.90) 100%);
-  backdrop-filter: blur(20px);
-  color: #fff;
-  padding: 48px 44px;
+
+.orbit-stage {
+  --role-accent: #2563eb;
+  --role-glow: rgba(37, 99, 235, 0.20);
+  --role-soft: rgba(37, 99, 235, 0.10);
+  position: relative;
+  min-height: calc(100vh - 190px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0 32px;
+  transition: --role-accent 0.4s ease;
+}
+
+.orbit-stage[data-role="empresa"] {
+  --role-accent: #059669;
+  --role-glow: rgba(5, 150, 105, 0.20);
+  --role-soft: rgba(5, 150, 105, 0.10);
+}
+
+.orbit-stage[data-role="admin"] {
+  --role-accent: #d97706;
+  --role-glow: rgba(217, 119, 6, 0.20);
+  --role-soft: rgba(217, 119, 6, 0.10);
+}
+
+.orbit-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 24px;
+  max-width: 1060px;
+  width: 100%;
+  align-items: stretch;
+}
+
+@media (max-width: 920px) {
+  .orbit-grid { grid-template-columns: 1fr; max-width: 540px; }
+}
+
+/* Left Bento Column */
+.orbit-bento-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.orbit-hero-card {
+  position: relative;
+  overflow: hidden;
+  padding: 32px 30px;
+  border-radius: 24px !important;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: relative;
 }
-.auth-badge {
+
+.orbit-hero-card::after {
+  content: "";
+  position: absolute;
+  top: -70px;
+  right: -70px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--role-glow) 0%, transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+  transition: background 0.5s ease;
+}
+
+.orbit-live-pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(20, 184, 166, 0.22);
-  border: 1px solid rgba(94, 234, 212, 0.4);
-  color: #5eead4;
-  padding: 6px 14px;
+  padding: 5px 12px;
   border-radius: 999px;
-  font-size: 12.5px;
-  font-weight: 700;
-  width: fit-content;
-  margin-bottom: 20px;
-}
-.auth-hero h1 {
-  color: #fff;
-  font-size: 32px;
-  line-height: 1.2;
-  margin: 0 0 16px;
-}
-.auth-hero p {
-  color: #cbd5e1;
-  font-size: 15.5px;
-  margin: 0 0 28px;
-  line-height: 1.6;
-}
-.feature-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 32px;
-  display: grid;
-  gap: 14px;
-}
-.feature-list li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14.5px;
-  color: #e2e8f0;
-}
-.feature-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: rgba(20, 184, 166, 0.25);
-  border: 1px solid rgba(94, 234, 212, 0.35);
-  color: #5eead4;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.demo-box {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-.demo-box-title {
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
   font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #94a3b8;
-  margin-bottom: 10px;
-}
-.demo-btns {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.demo-btn {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  color: #fff;
-  font-size: 12.5px;
   font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 8px;
-  box-shadow: none;
+  color: var(--ink-soft);
+  width: fit-content;
+  margin-bottom: 18px;
 }
-.demo-btn:hover {
-  background: rgba(20, 184, 166, 0.38);
-  border-color: #5eead4;
-  transform: translateY(-1px);
-  box-shadow: none;
+
+.orbit-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.65);
+  animation: orbitPulse 2.2s infinite;
 }
-.auth-form-pane {
-  padding: 48px 44px;
+
+@keyframes orbitPulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.65); }
+  70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.orbit-title {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.14;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+
+.orbit-title span {
+  background: linear-gradient(120deg, var(--role-accent), #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.orbit-lead {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0 0 22px;
+}
+
+.orbit-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.orbit-stat-tile {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  transition: transform 0.25s var(--ease-spring), border-color 0.25s ease;
+}
+
+.orbit-stat-tile:hover {
+  transform: translateY(-2px);
+  border-color: var(--role-accent);
+}
+
+.orbit-stat-tile strong {
+  display: block;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.orbit-stat-tile span {
+  font-size: 11.5px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* Demo Quick Access Bento Card */
+.orbit-demo-card {
+  padding: 20px 24px;
+  border-radius: 20px !important;
+}
+
+.orbit-demo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.orbit-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 520px) {
+  .orbit-demo-grid { grid-template-columns: 1fr; }
+}
+
+.orbit-persona {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 11px 12px;
+  border-radius: 14px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  color: var(--ink) !important;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: none !important;
+  transition: all 0.25s var(--ease-spring) !important;
+}
+
+.orbit-persona:hover {
+  transform: translateY(-2px);
+  border-color: var(--role-accent);
+  background: var(--role-soft);
+}
+
+.orbit-persona.active {
+  background: var(--role-soft) !important;
+  border-color: var(--role-accent) !important;
+  box-shadow: 0 0 0 2px var(--role-glow) !important;
+}
+
+.orbit-persona-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.orbit-persona-sub {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Right Auth Glass Card */
+.orbit-auth-card {
+  padding: 34px 32px;
+  border-radius: 24px !important;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
 }
-.register-cards {
+
+.orbit-role-pills {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 5px;
+  border-radius: 14px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  margin-bottom: 22px;
+}
+
+.orbit-role-tab {
+  border: none !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: none !important;
+  transition: all 0.25s var(--ease-spring) !important;
+}
+
+.orbit-role-tab:hover {
+  color: var(--ink) !important;
+}
+
+.orbit-role-tab.active {
+  background: var(--bg-surface-solid) !important;
+  color: var(--role-accent) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.orbit-field {
+  margin-bottom: 16px;
+}
+
+.orbit-field-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.orbit-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.orbit-input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--muted);
+  font-size: 15px;
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.orbit-input {
+  width: 100%;
+  padding: 11px 42px 11px 40px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  background: var(--bg-surface-solid) !important;
+  border: 1.5px solid var(--line) !important;
+  color: var(--ink) !important;
+}
+
+.orbit-input:focus {
+  border-color: var(--role-accent) !important;
+  box-shadow: 0 0 0 4px var(--role-glow) !important;
+}
+
+.orbit-input-wrap:focus-within .orbit-input-icon {
+  color: var(--role-accent);
+}
+
+.orbit-eye-btn {
+  position: absolute;
+  right: 10px;
+  border: none !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  padding: 4px 6px;
+  cursor: pointer;
+  box-shadow: none !important;
+}
+
+.orbit-eye-btn:hover {
+  color: var(--ink) !important;
+}
+
+.orbit-submit {
+  width: 100%;
+  padding: 12px 18px !important;
+  border-radius: 12px !important;
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  background: linear-gradient(135deg, var(--role-accent) 0%, #0f172a 140%) !important;
+  border: none !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 24px -6px var(--role-glow) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.orbit-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -6px var(--role-glow) !important;
+}
+
+.orbit-register-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
 }
-.reg-link-card {
-  border: 1px solid var(--line-strong);
-  border-radius: 10px;
-  padding: 12px 14px;
+
+.orbit-reg-pill {
   display: flex;
-  flex-direction: column;
-  gap: 3px;
-  transition: all 0.15s ease;
-  background: #f8fafc;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  text-decoration: none !important;
+  color: var(--ink) !important;
+  transition: all 0.22s var(--ease-spring);
 }
-.reg-link-card:hover {
-  border-color: var(--brand);
-  background: var(--brand-soft);
+
+.orbit-reg-pill:hover {
+  transform: translateY(-2px);
+  border-color: var(--role-accent);
+  background: var(--role-soft);
 }
-.reg-link-card strong {
-  color: var(--ink);
-  font-size: 13.5px;
-}
-.reg-link-card span {
+
+.orbit-reg-pill small {
+  display: block;
+  font-size: 11px;
   color: var(--muted);
-  font-size: 12px;
-}
-@media (max-width: 860px) {
-  .auth-shell { grid-template-columns: 1fr; }
-  .auth-hero, .auth-form-pane { padding: 32px 24px; }
 }
 </style>
 
-<div class="auth-shell">
-  <div class="auth-hero">
-    <div>
-      <div class="auth-badge">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-        Plataforma de Inserción Profesional
+<div id="orbit-stage" class="orbit-stage" data-role="estudiante">
+  <div class="orbit-grid">
+
+    <!-- LEFT BENTO COLUMN -->
+    <div class="orbit-bento-col">
+      <div class="card interactive orbit-hero-card">
+        <div>
+          <div class="orbit-live-pill">
+            <span class="orbit-pulse"></span>
+            <span>UCC Montería · Portal Activo</span>
+          </div>
+
+          <h1 class="orbit-title">
+            Tu puente hacia <span>oportunidades reales</span> de práctica y empleo
+          </h1>
+
+          <p class="orbit-lead">
+            Conecta tu talento universitario con organizaciones validadas, haz seguimiento en tiempo real a tus postulaciones y gestiona convocatorias desde un solo lugar.
+          </p>
+        </div>
+
+        <div class="orbit-stats-row">
+          <div class="orbit-stat-tile">
+            <strong>+120</strong>
+            <span>Vacantes activas</span>
+          </div>
+          <div class="orbit-stat-tile">
+            <strong>100%</strong>
+            <span>Empresas validadas</span>
+          </div>
+          <div class="orbit-stat-tile">
+            <strong>24/7</strong>
+            <span>Trazabilidad</span>
+          </div>
+        </div>
       </div>
-      <h1>Impulsa tu carrera profesional desde la universidad</h1>
-      <p>Conectamos a estudiantes y recién egresados con empresas validadas para prácticas profesionales y primer empleo.</p>
-      <ul class="feature-list">
-        <li>
-          <span class="feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-          Convocatorias verificadas de prácticas y empleo
-        </li>
-        <li>
-          <span class="feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-          Postulación en un clic y seguimiento en tiempo real
-        </li>
-        <li>
-          <span class="feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-          Gestión de candidatos y métricas para organizaciones
-        </li>
-      </ul>
+
+      <!-- 1-Click Demo Access -->
+      <div class="card interactive orbit-demo-card">
+        <div class="orbit-demo-head">
+          <span style="font-size:12.5px;font-weight:700;color:var(--ink);">
+            <i class="bi bi-stars text-primary me-1"></i> Acceso rápido de demostración
+          </span>
+          <span class="chip brand" style="margin:0;font-size:11px;">1 Clic</span>
+        </div>
+
+        <div class="orbit-demo-grid">
+          <button type="button" class="orbit-persona" onclick="fillPersona('laura@uni.edu.co', 'estudiante12345', 'Estudiante · Laura Gómez', this, 'estudiante')">
+            <span class="orbit-persona-top"><i class="bi bi-mortarboard-fill text-primary"></i> Estudiante</span>
+            <span class="orbit-persona-sub">Laura Gómez</span>
+          </button>
+          <button type="button" class="orbit-persona" onclick="fillPersona('rrhh@tecnova.co', 'empresa12345', 'Empresa · Tecnova SAS', this, 'empresa')">
+            <span class="orbit-persona-top"><i class="bi bi-building-fill text-success"></i> Empresa</span>
+            <span class="orbit-persona-sub">Tecnova SAS</span>
+          </button>
+          <button type="button" class="orbit-persona" onclick="fillPersona('admin@ppol.co', 'admin12345', 'Admin · Coordinación', this, 'admin')">
+            <span class="orbit-persona-top"><i class="bi bi-shield-lock-fill text-warning"></i> Admin</span>
+            <span class="orbit-persona-sub">Coordinación</span>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div class="demo-box">
-      <div class="demo-box-title">Acceso rápido de demostración</div>
-      <div class="demo-btns">
-        <button type="button" class="demo-btn" onclick="fillDemo('laura@uni.edu.co','estudiante12345')">Estudiante</button>
-        <button type="button" class="demo-btn" onclick="fillDemo('rrhh@tecnova.co','empresa12345')">Empresa</button>
-        <button type="button" class="demo-btn" onclick="fillDemo('admin@ppol.co','admin12345')">Administrador</button>
+    <!-- RIGHT AUTH GLASS CARD -->
+    <div class="card interactive orbit-auth-card">
+      <div class="orbit-role-pills" role="tablist" aria-label="Tipo de usuario">
+        <button type="button" class="orbit-role-tab active" id="tab-student" onclick="selectRoleTab('estudiante')">
+          <i class="bi bi-mortarboard"></i> Estudiante
+        </button>
+        <button type="button" class="orbit-role-tab" id="tab-company" onclick="selectRoleTab('empresa')">
+          <i class="bi bi-building"></i> Empresa
+        </button>
+        <button type="button" class="orbit-role-tab" id="tab-admin" onclick="selectRoleTab('admin')">
+          <i class="bi bi-shield-check"></i> Admin
+        </button>
+      </div>
+
+      <h2 style="margin:0 0 4px;font-size:24px;font-weight:800;letter-spacing:-0.025em;color:var(--ink);">
+        Bienvenido de nuevo
+      </h2>
+      <p id="form-subtitle" style="margin:0 0 20px;font-size:13.5px;color:var(--muted);">
+        Acceso para estudiantes y egresados de UCC Montería.
+      </p>
+
+      <form method="post" id="login-form" autocomplete="on">
+        {% csrf_token %}
+
+        {% if form.errors %}
+        <div class="msg error" style="margin-bottom:16px;font-size:13px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <i class="bi bi-exclamation-triangle-fill fs-5" style="color:var(--bad);"></i>
+            <span><strong>Error:</strong> Correo o contraseña incorrectos.</span>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="orbit-field">
+          <div class="orbit-field-label">
+            <label for="id_username" style="margin:0;">Correo electrónico</label>
+            <span id="email-role-hint" style="font-size:11.5px;font-weight:600;display:none;"></span>
+          </div>
+          <div class="orbit-input-wrap">
+            <i class="bi bi-envelope orbit-input-icon"></i>
+            <input id="id_username" name="username" type="email" class="orbit-input" placeholder="nombre@correo.edu.co" required autofocus oninput="handleEmailInput(this.value)">
+          </div>
+        </div>
+
+        <div class="orbit-field">
+          <div class="orbit-field-label">
+            <label for="id_password" style="margin:0;">Contraseña</label>
+            <a href="javascript:void(0)" onclick="showHelpModal()" style="font-size:12px;font-weight:600;">¿Olvidaste tu clave?</a>
+          </div>
+          <div class="orbit-input-wrap">
+            <i class="bi bi-lock orbit-input-icon"></i>
+            <input id="id_password" name="password" type="password" class="orbit-input" placeholder="••••••••••••" required>
+            <button type="button" class="orbit-eye-btn" id="pwd-toggle-btn" onclick="togglePasswordVisibility()" title="Mostrar u ocultar contraseña" tabindex="-1">
+              <i class="bi bi-eye" id="pwd-eye-icon"></i>
+            </button>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;font-size:12.5px;">
+          <label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;color:var(--ink-soft);margin:0;">
+            <input type="checkbox" id="remember_me" name="remember_me" checked style="accent-color:var(--role-accent);">
+            <span>Recordar este equipo</span>
+          </label>
+          <span style="color:var(--muted);"><i class="bi bi-shield-check text-success me-1"></i>Conexión segura</span>
+        </div>
+
+        <button type="submit" class="orbit-submit" id="btn-submit">
+          <span>Ingresar al portal</span>
+          <i class="bi bi-arrow-right"></i>
+        </button>
+      </form>
+
+      <div class="orbit-register-row">
+        <a class="orbit-reg-pill" href="{% url 'register' 'estudiante' %}">
+          <i class="bi bi-mortarboard-fill fs-5 text-primary"></i>
+          <div>
+            <strong style="font-size:12.5px;">Soy Estudiante</strong>
+            <small>Crear cuenta</small>
+          </div>
+        </a>
+        <a class="orbit-reg-pill" href="{% url 'register' 'empresa' %}">
+          <i class="bi bi-building-fill fs-5 text-success"></i>
+          <div>
+            <strong style="font-size:12.5px;">Soy Empresa</strong>
+            <small>Registrar aliado</small>
+          </div>
+        </a>
       </div>
     </div>
+
   </div>
+</div>
 
-  <div class="auth-form-pane">
-    <h2 style="font-size:24px;margin-bottom:6px">Bienvenido de nuevo</h2>
-    <p class="muted" style="margin:0 0 24px">Ingresa tus credenciales para acceder a tu panel.</p>
-
-    <form method="post" class="form" id="login-form">
-      {% csrf_token %}
-      {% if form.errors %}
-        <div class="errorlist">Correo electrónico o contraseña incorrectos. Verifica tus datos.</div>
-      {% endif %}
-      <p>
-        <label>Correo electrónico
-          <input id="id_username" name="username" type="email" placeholder="nombre@correo.edu.co" required autofocus>
-        </label>
-      </p>
-      <p>
-        <label>Contraseña
-          <input id="id_password" name="password" type="password" placeholder="••••••••" required>
-        </label>
-      </p>
-      <button class="btn lg block" style="margin-top:6px">
-        Iniciar sesión
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-      </button>
-    </form>
-
-    <div style="margin-top:28px;padding-top:22px;border-top:1px solid var(--line)">
-      <div class="muted" style="font-weight:600;color:var(--ink-soft)">¿Aún no tienes una cuenta en PPOL?</div>
-      <div class="register-cards">
-        <a class="reg-link-card" href="{% url 'register' 'estudiante' %}">
-          <strong>Soy Estudiante →</strong>
-          <span>Busca prácticas y empleo</span>
-        </a>
-        <a class="reg-link-card" href="{% url 'register' 'empresa' %}">
-          <strong>Soy Empresa →</strong>
-          <span>Publica tus vacantes</span>
-        </a>
-      </div>
+<!-- Glass Help Modal -->
+<div id="help-modal" class="ppol-modal-backdrop" onclick="if(event.target===this) closeHelpModal()">
+  <div class="ppol-modal-card">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+      <div class="avatar brand"><i class="bi bi-key-fill"></i></div>
+      <h3 style="margin:0;font-size:17px;font-weight:700;">Recuperación de acceso</h3>
     </div>
+    <p style="margin:0 0 18px;font-size:13.5px;color:var(--ink-soft);line-height:1.55;">
+      Si olvidaste tu contraseña o necesitas restablecer tu cuenta institucional, comunícate con la Coordinación de Prácticas de la UCC Montería o utiliza el acceso rápido de demostración.
+    </p>
+    <button type="button" class="btn block" onclick="closeHelpModal()">Entendido</button>
   </div>
 </div>
 
 <script>
-function fillDemo(user, pass) {
-  document.getElementById('id_username').value = user;
-  document.getElementById('id_password').value = pass;
+function selectRoleTab(role) {
+  const stage = document.getElementById('orbit-stage');
+  const tabS = document.getElementById('tab-student');
+  const tabC = document.getElementById('tab-company');
+  const tabA = document.getElementById('tab-admin');
+  const userInput = document.getElementById('id_username');
+  const subtitle = document.getElementById('form-subtitle');
+
+  if (stage) stage.setAttribute('data-role', role);
+  [tabS, tabC, tabA].forEach((t) => t && t.classList.remove('active'));
+
+  if (role === 'estudiante') {
+    tabS?.classList.add('active');
+    if (userInput) userInput.placeholder = 'nombre@correo.edu.co';
+    if (subtitle) subtitle.textContent = 'Acceso para estudiantes y egresados de UCC Montería.';
+  } else if (role === 'empresa') {
+    tabC?.classList.add('active');
+    if (userInput) userInput.placeholder = 'contacto@empresa.com';
+    if (subtitle) subtitle.textContent = 'Portal de reclutamiento y gestión de vacantes para organizaciones.';
+  } else {
+    tabA?.classList.add('active');
+    if (userInput) userInput.placeholder = 'admin@ppol.co';
+    if (subtitle) subtitle.textContent = 'Acceso administrativo y auditoría institucional.';
+  }
 }
+
+function fillPersona(email, password, roleLabel, element, roleType) {
+  const userInput = document.getElementById('id_username');
+  const passInput = document.getElementById('id_password');
+  if (userInput) userInput.value = email;
+  if (passInput) passInput.value = password;
+
+  document.querySelectorAll('.orbit-persona').forEach((b) => b.classList.remove('active'));
+  if (element) element.classList.add('active');
+  if (roleType) selectRoleTab(roleType);
+  handleEmailInput(email);
+
+  if (window.ppolToast) {
+    window.ppolToast(`Credenciales de ${roleLabel} cargadas.`, 'good');
+  }
+  passInput?.focus();
+}
+
+function togglePasswordVisibility() {
+  const passInput = document.getElementById('id_password');
+  const icon = document.getElementById('pwd-eye-icon');
+  if (!passInput || !icon) return;
+  const isPwd = passInput.type === 'password';
+  passInput.type = isPwd ? 'text' : 'password';
+  icon.className = isPwd ? 'bi bi-eye-slash' : 'bi bi-eye';
+}
+
+function handleEmailInput(val) {
+  const hint = document.getElementById('email-role-hint');
+  if (!hint) return;
+  const clean = val.toLowerCase().trim();
+  if (clean.includes('.edu.co')) {
+    hint.innerHTML = '<i class="bi bi-mortarboard-fill me-1"></i>Estudiante UCC';
+    hint.style.color = '#2563eb';
+    hint.style.display = 'inline';
+    selectRoleTab('estudiante');
+  } else if (clean.includes('admin') || clean.includes('ppol.co')) {
+    hint.innerHTML = '<i class="bi bi-shield-lock-fill me-1"></i>Admin PPOL';
+    hint.style.color = '#d97706';
+    hint.style.display = 'inline';
+    selectRoleTab('admin');
+  } else if (clean.includes('@')) {
+    hint.innerHTML = '<i class="bi bi-building-fill me-1"></i>Empresa';
+    hint.style.color = '#059669';
+    hint.style.display = 'inline';
+    selectRoleTab('empresa');
+  } else {
+    hint.style.display = 'none';
+  }
+}
+
+function showHelpModal() {
+  document.getElementById('help-modal')?.classList.add('open');
+}
+function closeHelpModal() {
+  document.getElementById('help-modal')?.classList.remove('open');
+}
+
+document.getElementById('login-form')?.addEventListener('submit', function () {
+  const btn = document.getElementById('btn-submit');
+  if (btn) {
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Ingresando...';
+    btn.style.opacity = '0.9';
+    btn.style.pointerEvents = 'none';
+  }
+});
 </script>
 {% endblock %}

@@ -1,62 +1,206 @@
 {% extends "base.html" %}
 {% block title %}Mis postulaciones · PPOL{% endblock %}
 {% block content %}
+<style>
+.app-filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.app-filter-pill {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  background: var(--bg-surface);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.2s var(--ease-spring);
+  box-shadow: none !important;
+}
+.app-filter-pill:hover {
+  border-color: var(--accent-border);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+.app-filter-pill.active {
+  background: var(--accent-soft) !important;
+  border-color: var(--accent-border) !important;
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+.kinetic-stepper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  overflow-x: auto;
+  padding: 16px 4px 4px;
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.k-step {
+  flex: 1;
+  min-width: 120px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+.k-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 11px;
+  left: calc(50% + 14px);
+  width: calc(100% - 28px);
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-border), var(--line));
+}
+.k-step-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-subtle);
+  border: 2px solid var(--accent-border);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.25s var(--ease-spring);
+}
+.k-step.is-current .k-step-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+  box-shadow: 0 0 0 5px var(--accent-soft);
+  animation: kPulse 2.2s infinite;
+}
+.k-step:hover .k-step-dot {
+  transform: scale(1.15);
+}
+.k-step-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.k-step.is-current .k-step-label {
+  color: var(--accent);
+}
+.k-step-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+@keyframes kPulse {
+  0%, 100% { box-shadow: 0 0 0 4px var(--accent-soft); }
+  50% { box-shadow: 0 0 0 9px transparent; }
+}
+.app-card.is-hidden {
+  display: none !important;
+}
+</style>
+
 <div class="page-header">
   <div>
     <h1>Mis postulaciones</h1>
-    <p class="page-subtitle">Haz seguimiento en tiempo real al proceso de selección de tus candidaturas.</p>
+    <p class="page-subtitle">Seguimiento en tiempo real al proceso de selección de tus candidaturas.</p>
   </div>
   <a class="btn ghost" href="{% url 'offers' %}">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-    Buscar más ofertas
+    <i class="bi bi-search me-1"></i> Explorar más ofertas
   </a>
 </div>
 
+{% if apps %}
+<div class="app-filter-bar" role="group" aria-label="Filtrar postulaciones por estado">
+  <button type="button" class="app-filter-pill active" data-app-filter="all">Todas ({{ apps|length }})</button>
+  <button type="button" class="app-filter-pill" data-app-filter="active"><i class="bi bi-hourglass-split me-1"></i>En proceso</button>
+  <button type="button" class="app-filter-pill" data-app-filter="interview"><i class="bi bi-camera-video me-1"></i>Preselección / Entrevista</button>
+  <button type="button" class="app-filter-pill" data-app-filter="accepted"><i class="bi bi-check-circle me-1"></i>Aceptadas</button>
+  <button type="button" class="app-filter-pill" data-app-filter="closed"><i class="bi bi-x-circle me-1"></i>Finalizadas</button>
+</div>
+{% endif %}
+
 {% for a in apps %}
-<div class="card">
+<div class="card interactive app-card" data-status="{{ a.status }}">
   <div class="row-center">
-    <div style="display:flex;gap:16px;align-items:center">
-      <div class="avatar">{{ a.offer.company.name|slice:":2" }}</div>
+    <div style="display:flex;gap:14px;align-items:center">
+      <div class="avatar brand">{{ a.offer.company.name|slice:":2" }}</div>
       <div>
-        <h2 style="margin:0;font-size:18px">
+        <h2 style="margin:0;font-size:17px;font-weight:700">
           <a href="{% url 'offer_detail' a.offer.pk %}" style="color:var(--ink)">{{ a.offer.title }}</a>
         </h2>
-        <div class="muted" style="margin-top:2px">
-          <strong style="color:var(--ink-soft)">{{ a.offer.company.name }}</strong> · {{ a.offer.city }} · Postulación enviada el {{ a.created|date:"d/m/Y" }}
+        <div class="muted" style="margin-top:2px;font-size:13px">
+          <strong style="color:var(--ink-soft)">{{ a.offer.company.name }}</strong> · {{ a.offer.city }} · Postulado el {{ a.created|date:"d/m/Y" }}
         </div>
       </div>
     </div>
 
     <div style="display:flex;align-items:center;gap:10px">
-      <span class="chip {% if a.status == 'ACE' %}good{% elif a.status == 'REC' or a.status == 'RET' %}bad{% elif a.status == 'ENT' or a.status == 'PRE' %}brand{% else %}accent{% endif %}" style="font-size:13px;padding:6px 14px">
+      <span class="chip {% if a.status == 'ACE' %}good{% elif a.status == 'REC' or a.status == 'RET' %}bad{% elif a.status == 'ENT' or a.status == 'PRE' %}brand{% else %}accent{% endif %}">
         {{ a.get_status_display }}
       </span>
       {% if not a.is_final %}
-      <form method="post" action="{% url 'withdraw' a.pk %}" onsubmit="return confirm('¿Estás seguro de retirar tu postulación a esta oferta?');">
+      <form method="post" action="{% url 'withdraw' a.pk %}" data-confirm="¿Confirmas el retiro de tu postulación a esta oferta?" style="margin:0;">
         {% csrf_token %}
-        <button class="bad sm">Retirar</button>
+        <button type="submit" class="sm bad">Retirar</button>
       </form>
       {% endif %}
     </div>
   </div>
 
-  <div class="timeline">
-    <span class="muted" style="font-size:12px;font-weight:700;margin-right:4px">Trazabilidad:</span>
+  <div class="kinetic-stepper" aria-label="Trazabilidad de la postulación">
     {% for l in a.log.all %}
-      <span class="timeline-step {% if forloop.last %}last{% endif %}">
-        {{ l.get_status_display }}
-        <span style="opacity:0.7;font-weight:400">({{ l.created|date:"d/m H:i" }})</span>
-      </span>
-      {% if not forloop.last %}<span class="timeline-arrow">→</span>{% endif %}
+      <div class="k-step {% if forloop.last %}is-current{% endif %}">
+        <div class="k-step-dot">
+          {% if forloop.last %}
+            <i class="bi bi-stars"></i>
+          {% else %}
+            <i class="bi bi-check2"></i>
+          {% endif %}
+        </div>
+        <div class="k-step-label">{{ l.get_status_display }}</div>
+        <div class="k-step-time">{{ l.created|date:"d/m H:i" }}</div>
+      </div>
     {% endfor %}
   </div>
 </div>
 {% empty %}
 <div class="empty-state">
-  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+  <i class="bi bi-inbox fs-1 text-muted"></i>
   <h3>Aún no tienes postulaciones registradas</h3>
-  <p>Explora las convocatorias disponibles y postúlate con un clic usando tu perfil.</p>
+  <p>Explora las convocatorias disponibles y postúlate con un clic usando tu perfil universitario.</p>
   <a class="btn" href="{% url 'offers' %}">Explorar ofertas disponibles</a>
 </div>
 {% endfor %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const pills = document.querySelectorAll('.app-filter-pill');
+  const cards = document.querySelectorAll('.app-card');
+
+  pills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      pills.forEach((p) => p.classList.remove('active'));
+      pill.classList.add('active');
+      const f = pill.dataset.appFilter;
+
+      cards.forEach((card) => {
+        const st = card.dataset.status;
+        let show = true;
+        if (f === 'active') show = (st === 'POS' || st === 'REV');
+        else if (f === 'interview') show = (st === 'PRE' || st === 'ENT');
+        else if (f === 'accepted') show = (st === 'ACE');
+        else if (f === 'closed') show = (st === 'REC' || st === 'RET');
+        card.classList.toggle('is-hidden', !show);
+      });
+    });
+  });
+});
+</script>
 {% endblock %}

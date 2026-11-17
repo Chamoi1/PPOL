@@ -1,33 +1,31 @@
 {% extends "base.html" %}
 {% block title %}Mis convocatorias · PPOL{% endblock %}
 {% block content %}
-<div class="card" style="background:linear-gradient(135deg,rgba(15,23,42,0.92) 0%,rgba(19,78,74,0.88) 100%);color:#fff;padding:28px 32px;margin-bottom:24px;border:1px solid rgba(94,234,212,0.3);box-shadow:0 16px 36px -8px rgba(15,23,42,0.22),inset 0 1px 1px rgba(255,255,255,0.22)">
+<div class="card" style="padding:24px 28px;margin-bottom:24px;">
   <div class="row-center">
-    <div style="display:flex;gap:18px;align-items:center">
-      <div class="avatar lg" style="background:rgba(20,184,166,0.22);border-color:rgba(94,234,212,0.4);color:#5eead4">
+    <div style="display:flex;gap:16px;align-items:center">
+      <div class="avatar lg">
         {{ company.name|slice:":2" }}
       </div>
       <div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
-          <h1 style="color:#fff;margin:0;font-size:24px">{{ company.name }}</h1>
+          <h1 style="color:var(--ink);margin:0;font-size:22px;font-weight:700">{{ company.name }}</h1>
           <span class="chip {% if company.status == 'APR' %}good{% elif company.status == 'PEN' %}warn{% else %}bad{% endif %}">
             {{ company.get_status_display }}
           </span>
         </div>
-        <div style="color:#cbd5e1;font-size:14px">
+        <div class="muted" style="font-size:13px">
           NIT {{ company.nit }} · Sector {{ company.sector }} · Contacto: {{ company.contact }}
         </div>
       </div>
     </div>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-      <a class="btn ghost" href="{% url 'company_profile' %}" style="color:#fff;border-color:rgba(255,255,255,0.3)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        Editar perfil
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <a class="btn ghost" href="{% url 'company_profile' %}">
+        <i class="bi bi-pencil me-1"></i> Perfil empresa
       </a>
       {% if company.status == "APR" %}
-        <a class="btn lg" href="{% url 'offer_new' %}">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          Publicar nueva oferta
+        <a class="btn" href="{% url 'offer_new' %}">
+          <i class="bi bi-plus-lg me-1"></i> Publicar oferta
         </a>
       {% endif %}
     </div>
@@ -36,37 +34,40 @@
 
 {% if company.status == "PEN" %}
   <div class="msg warning">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-    <span>Tu empresa se encuentra pendiente de validación por parte del administrador. Podrás publicar ofertas en cuanto sea aprobada.</span>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <i class="bi bi-hourglass-split"></i>
+      <span>Tu empresa está en proceso de validación institucional. Podrás publicar convocatorias una vez sea aprobada.</span>
+    </div>
   </div>
 {% endif %}
 {% if company.status == "REJ" %}
   <div class="msg error">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-    <span>Tu registro empresarial fue rechazado. Observaciones: <strong>{{ company.review_notes|default:"Sin observaciones adicionales." }}</strong></span>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <i class="bi bi-x-circle-fill"></i>
+      <span>Registro empresarial rechazado. Observaciones: <strong>{{ company.review_notes|default:"Sin observaciones registradas." }}</strong></span>
+    </div>
   </div>
 {% endif %}
 
 <div class="page-header" style="margin-bottom:16px">
-  <h2 style="margin:0;font-size:20px">Convocatorias registradas ({{ offers|length }})</h2>
+  <h2 style="margin:0;font-size:18px;font-weight:700">Convocatorias registradas ({{ offers|length }})</h2>
 </div>
 
 {% for o in offers %}
-<div class="card row-center">
+<div class="card interactive row-center">
   <div>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <h2 style="margin:0;font-size:18px">{{ o.title }}</h2>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <h2 style="margin:0;font-size:17px;font-weight:600">{{ o.title }}</h2>
       <span class="chip {% if o.status == 'ACT' %}good{% elif o.status == 'PEN' or o.status == 'PAU' %}warn{% else %}bad{% endif %}">
         {{ o.get_status_display }}
       </span>
     </div>
-    <div class="muted" style="margin-top:4px">
-      {{ o.get_kind_display }} · {{ o.get_mode_display }} · {{ o.city }} · Cierra el <strong>{{ o.deadline|date:"d/m/Y" }}</strong>
+    <div class="muted" style="margin-top:4px;font-size:13px">
+      {{ o.get_kind_display }} · {{ o.get_mode_display }} · {{ o.city }} · Cierre: <strong>{{ o.deadline|date:"d/m/Y" }}</strong>
     </div>
     <div class="chips">
       <span class="chip brand">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-        {{ o.n }} {% if o.n == 1 %}postulante{% else %}postulantes{% endif %}
+        <i class="bi bi-people me-1"></i> {{ o.n }} {% if o.n == 1 %}postulante{% else %}postulantes{% endif %}
       </span>
       <span class="chip">{{ o.area }}</span>
     </div>
@@ -78,21 +79,21 @@
     </a>
     <a class="btn sm ghost" href="{% url 'offer_edit' o.pk %}">Editar</a>
     {% if o.status == "ACT" %}
-      <form method="post" action="{% url 'offer_status' o.pk 'pausar' %}">{% csrf_token %}<button class="sm ghost">Pausar</button></form>
+      <form method="post" action="{% url 'offer_status' o.pk 'pausar' %}" style="margin:0;">{% csrf_token %}<button class="sm ghost">Pausar</button></form>
     {% endif %}
     {% if o.status == "PAU" %}
-      <form method="post" action="{% url 'offer_status' o.pk 'reanudar' %}">{% csrf_token %}<button class="sm ghost">Reanudar</button></form>
+      <form method="post" action="{% url 'offer_status' o.pk 'reanudar' %}" style="margin:0;">{% csrf_token %}<button class="sm ghost">Reanudar</button></form>
     {% endif %}
     {% if o.status != "CER" %}
-      <form method="post" action="{% url 'offer_status' o.pk 'cerrar' %}" onsubmit="return confirm('¿Cerrar definitivamente esta convocatoria?');">{% csrf_token %}<button class="sm bad">Cerrar</button></form>
+      <form method="post" action="{% url 'offer_status' o.pk 'cerrar' %}" onsubmit="return confirm('¿Confirmas el cierre definitivo de esta convocatoria?');" style="margin:0;">{% csrf_token %}<button class="sm bad">Cerrar</button></form>
     {% endif %}
   </div>
 </div>
 {% empty %}
 <div class="empty-state">
-  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-  <h3>Todavía no has publicado convocatorias</h3>
-  <p>Crea tu primera oferta de práctica o empleo para recibir postulaciones de estudiantes.</p>
+  <i class="bi bi-briefcase fs-1 text-muted"></i>
+  <h3>No has publicado convocatorias aún</h3>
+  <p>Crea tu primera oferta de práctica o empleo para recibir postulaciones de estudiantes universitarios.</p>
   {% if company.status == "APR" %}
     <a class="btn" href="{% url 'offer_new' %}">Publicar primera oferta</a>
   {% endif %}

@@ -3,8 +3,7 @@
 {% block content %}
 <div class="breadcrumb">
   <a href="{% url 'company_offers' %}">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-    Mis convocatorias
+    <i class="bi bi-arrow-left me-1"></i> Mis convocatorias
   </a>
   <span>/</span>
   <span>Perfil corporativo (HU06)</span>
@@ -13,65 +12,66 @@
 <div class="page-header">
   <div>
     <h1>Perfil de la organización</h1>
-    <p class="page-subtitle">Gestiona la información pública e institucional de tu empresa para los postulantes y la universidad.</p>
+    <p class="page-subtitle">Gestiona la información institucional visible para estudiantes y la universidad.</p>
   </div>
 </div>
 
 <div class="layout-profile">
   <div>
-    <div class="card" style="text-align:center;padding:28px 22px">
-      <div class="avatar lg" style="margin:0 auto 14px;background:rgba(20,184,166,0.22);color:#0d9488">
+    <div class="card" style="text-align:center;padding:26px 20px">
+      <div class="avatar lg" style="margin:0 auto 12px">
         {{ company.name|slice:":2" }}
       </div>
-      <h2 style="margin:0 0 4px">{{ company.name }}</h2>
-      <div class="muted" style="margin-bottom:14px">NIT: {{ company.nit }}</div>
-      <div class="chips" style="justify-content:center;margin-bottom:20px">
+      <h2 style="margin:0 0 4px;font-size:18px;font-weight:700">{{ company.name }}</h2>
+      <div class="muted" style="margin-bottom:12px;font-size:13px">NIT: {{ company.nit }}</div>
+      <div class="chips" style="justify-content:center;margin-bottom:18px">
         <span class="chip {% if company.status == 'APR' %}good{% elif company.status == 'PEN' %}warn{% else %}bad{% endif %}">
           {{ company.get_status_display }}
         </span>
         <span class="chip">{{ company.sector }}</span>
       </div>
 
-      <div style="text-align:left;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:16px;font-size:13px;">
-        <p style="margin:0 0 8px;"><strong>Contacto:</strong> {{ company.contact }}</p>
-        <p style="margin:0 0 8px;"><strong>Correo:</strong> {{ company.user.email }}</p>
-        {% if company.phone %}<p style="margin:0 0 8px;"><strong>Teléfono:</strong> {{ company.phone }}</p>{% endif %}
+      <div style="text-align:left;background:var(--bg-subtle);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;font-size:13px;">
+        <p style="margin:0 0 6px;"><strong>Contacto:</strong> {{ company.contact }}</p>
+        <p style="margin:0 0 6px;"><strong>Correo:</strong> {{ company.user.email }}</p>
+        {% if company.phone %}<p style="margin:0 0 6px;"><strong>Teléfono:</strong> {{ company.phone }}</p>{% endif %}
         {% if company.city %}<p style="margin:0;"><strong>Sede:</strong> {{ company.city }}</p>{% endif %}
       </div>
     </div>
   </div>
 
-  <div class="card form" style="padding:32px">
-    <h2 style="margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--line)">Actualizar datos empresariales</h2>
+  <div class="card form" style="padding:28px">
+    <h2 style="margin:0 0 16px;padding-bottom:12px;border-bottom:1px solid var(--line);font-size:17px;font-weight:700">
+      Actualizar datos empresariales
+    </h2>
     <form method="post">
       {% csrf_token %}
 
-      <div style="background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:20px;">
-        <h3 style="margin-top:0;font-size:15px;color:var(--brand-deep)">1. Datos generales</h3>
+      <div style="background:var(--bg-subtle);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin-bottom:18px;">
+        <h3 style="margin-top:0;font-size:14px;font-weight:600;color:var(--ink)">1. Datos generales</h3>
         <p>{{ form.name.label_tag }} {{ form.name }} {{ form.name.errors }}</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <p>{{ form.sector.label_tag }} {{ form.sector }} {{ form.sector.errors }}</p>
           <p>{{ form.city.label_tag }} {{ form.city }} {{ form.city.errors }}</p>
         </div>
       </div>
 
-      <div style="background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:20px;">
-        <h3 style="margin-top:0;font-size:15px;color:var(--brand-deep)">2. Contacto institucional y presencia digital</h3>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div style="background:var(--bg-subtle);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin-bottom:18px;">
+        <h3 style="margin-top:0;font-size:14px;font-weight:600;color:var(--ink)">2. Contacto institucional y presencia digital</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <p>{{ form.contact.label_tag }} {{ form.contact }} {{ form.contact.errors }}</p>
           <p>{{ form.phone.label_tag }} {{ form.phone }} {{ form.phone.errors }}</p>
         </div>
         <p>{{ form.website.label_tag }} {{ form.website }} {{ form.website.errors }}</p>
       </div>
 
-      <div style="background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:24px;">
-        <h3 style="margin-top:0;font-size:15px;color:var(--brand-deep)">3. Descripción institucional</h3>
+      <div style="background:var(--bg-subtle);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;margin-bottom:20px;">
+        <h3 style="margin-top:0;font-size:14px;font-weight:600;color:var(--ink)">3. Descripción institucional</h3>
         <p>{{ form.description.label_tag }} {{ form.description }} {{ form.description.errors }}</p>
       </div>
 
-      <button class="btn lg">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-        Guardar cambios empresariales
+      <button class="btn">
+        <i class="bi bi-check2 me-1"></i> Guardar cambios empresariales
       </button>
     </form>
   </div>

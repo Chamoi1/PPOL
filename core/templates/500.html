@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Error interno · PPOL{% endblock %}
+{% block title %}Error en el servidor · PPOL{% endblock %}
 {% block content %}
-<div class="empty-state" style="padding:60px 24px;max-width:600px;margin:40px auto;border-color:var(--gold-border);">
-  <div style="font-size:72px;font-weight:800;color:var(--gold);line-height:1;margin-bottom:12px;">500</div>
-  <h2 style="margin:0 0 10px;font-size:24px;">Error en el servidor</h2>
-  <p style="color:var(--muted);font-size:15px;margin-bottom:24px;">
-    Ocurrió una eventualidad inesperada en el servidor. El equipo técnico ha registrado el evento.
+<div class="empty-state" style="padding:60px 24px;max-width:540px;margin:40px auto;border-color:var(--bad-border);">
+  <div style="font-size:64px;font-weight:800;color:var(--bad);line-height:1;margin-bottom:12px;letter-spacing:-0.03em;">500</div>
+  <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Error interno del servidor</h2>
+  <p style="color:var(--muted);font-size:14px;margin-bottom:24px;">
+    Se ha presentado una eventualidad inesperada en el servidor. El sistema ha registrado el evento.
   </p>
-  <a class="btn lg" href="{% url 'home' %}">
-    Volver al inicio
+  <a class="btn" href="{% url 'home' %}">
+    <i class="bi bi-house me-1"></i> Volver al inicio
   </a>
 </div>
 {% endblock %}

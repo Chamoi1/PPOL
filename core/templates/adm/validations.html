@@ -1,79 +1,199 @@
 {% extends "base.html" %}
 {% block title %}Panel de validaciones · PPOL{% endblock %}
 {% block content %}
-<div class="page-header">
+<style>
+.val-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.val-mini-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.val-tabs {
+  display: inline-flex;
+  gap: 6px;
+  padding: 4px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+}
+.val-tab-btn {
+  border: none !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  padding: 5px 12px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: none !important;
+  transition: all 0.2s var(--ease-spring);
+}
+.val-tab-btn:hover {
+  color: var(--ink) !important;
+}
+.val-tab-btn.active {
+  background: var(--bg-surface-solid) !important;
+  color: var(--accent) !important;
+  box-shadow: var(--shadow-xs) !important;
+}
+.val-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 520px) {
+  .val-grid { grid-template-columns: 1fr; }
+}
+.val-card-compact {
+  padding: 10px 14px !important;
+  margin-bottom: 8px !important;
+  border-radius: 12px !important;
+}
+.val-empty-compact {
+  padding: 10px 16px !important;
+  margin-bottom: 8px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  text-align: left !important;
+  border-radius: 12px !important;
+}
+.val-section.is-hidden {
+  display: none;
+}
+</style>
+
+<div class="val-topbar">
   <div>
-    <h1>Centro de validaciones institucionales</h1>
-    <p class="page-subtitle">Revisa y aprueba las solicitudes de registro empresarial y las nuevas convocatorias antes de su publicación.</p>
+    <h1 style="margin:0 0 2px;font-size:21px;font-weight:800;letter-spacing:-0.02em;">
+      Centro de validaciones institucionales
+    </h1>
+    <p class="page-subtitle" style="font-size:13px;">
+      Revisa y aprueba solicitudes de empresas y convocatorias antes de su publicación.
+    </p>
+  </div>
+  <div class="val-mini-stats">
+    <span class="chip {% if companies %}warn{% else %}good{% endif %}" style="font-size:12px;padding:4px 10px;">
+      <i class="bi bi-building"></i> {{ companies|length }} empresas
+    </span>
+    <span class="chip {% if offers %}brand{% else %}good{% endif %}" style="font-size:12px;padding:4px 10px;">
+      <i class="bi bi-briefcase"></i> {{ offers|length }} convocatorias
+    </span>
   </div>
 </div>
 
-<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-  <h2 style="margin:0;font-size:20px">Empresas pendientes de validación</h2>
-  <span class="chip {% if companies %}warn{% else %}good{% endif %}" style="margin:0">{{ companies|length }}</span>
+<div class="val-tabs" role="tablist" aria-label="Filtrar cola de validaciones">
+  <button type="button" class="val-tab-btn active" data-val-tab="all">
+    <i class="bi bi-grid me-1"></i> Todo ({{ companies|length|add:offers|length }})
+  </button>
+  <button type="button" class="val-tab-btn" data-val-tab="companies">
+    <i class="bi bi-building me-1"></i> Empresas ({{ companies|length }})
+  </button>
+  <button type="button" class="val-tab-btn" data-val-tab="offers">
+    <i class="bi bi-megaphone me-1"></i> Convocatorias ({{ offers|length }})
+  </button>
 </div>
 
-{% for c in companies %}
-<div class="card row-center">
-  <div style="display:flex;gap:16px;align-items:center">
-    <div class="avatar">{{ c.name|slice:":2" }}</div>
-    <div>
-      <h2 style="margin:0 0 2px;font-size:18px">{{ c.name }}</h2>
-      <div class="muted">
-        <strong>NIT:</strong> {{ c.nit }} · <strong>Sector:</strong> {{ c.sector }} · <strong>Contacto:</strong> {{ c.contact }} ({{ c.user.email }})
-      </div>
-    </div>
-  </div>
-  <form method="post" class="bar" style="margin:0">
-    {% csrf_token %}
-    <input type="hidden" name="kind" value="company">
-    <input type="hidden" name="id" value="{{ c.pk }}">
-    <input name="notes" placeholder="Observaciones (opcional o motivo rechazo)" style="min-width:260px">
-    <button name="decision" value="ok" class="sm">✓ Aprobar empresa</button>
-    <button name="decision" value="no" class="sm bad">✕ Rechazar</button>
-  </form>
-</div>
-{% empty %}
-<div class="card muted" style="text-align:center;padding:28px;border-style:dashed">
-  ✓ Todas las solicitudes empresariales han sido revisadas. No hay empresas pendientes.
-</div>
-{% endfor %}
-
-<div style="display:flex;align-items:center;gap:10px;margin:32px 0 14px">
-  <h2 style="margin:0;font-size:20px">Convocatorias pendientes de aprobación</h2>
-  <span class="chip {% if offers %}warn{% else %}good{% endif %}" style="margin:0">{{ offers|length }}</span>
-</div>
-
-{% for o in offers %}
-<div class="card">
-  <div class="row-center">
-    <div>
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
-        <h2 style="margin:0;font-size:18px">{{ o.title }}</h2>
-        <span class="chip brand" style="margin:0">{{ o.get_kind_display }}</span>
-        <span class="chip" style="margin:0">{{ o.get_mode_display }}</span>
-        <span class="chip" style="margin:0">{{ o.area }}</span>
-      </div>
-      <div class="muted">
-        <strong>{{ o.company.name }}</strong> · {{ o.city }} · Dirigida a: {{ o.programs }} · Cierre: {{ o.deadline|date:"d/m/Y" }}
-      </div>
+<div class="val-grid">
+  <div class="val-section" data-val-section="companies">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <h2 style="margin:0;font-size:15px;font-weight:700">Empresas pendientes</h2>
+      <span class="chip {% if companies %}warn{% else %}good{% endif %}" style="margin:0">{{ companies|length }}</span>
     </div>
 
-    <form method="post" class="bar" style="margin:0">
-      {% csrf_token %}
-      <input type="hidden" name="kind" value="offer">
-      <input type="hidden" name="id" value="{{ o.pk }}">
-      <button name="decision" value="ok" class="sm">✓ Aprobar y publicar</button>
-      <button name="decision" value="no" class="sm bad">✕ Rechazar</button>
-    </form>
+    {% for c in companies %}
+    <div class="card interactive val-card-compact">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;">
+        <div class="avatar brand" style="width:32px;height:32px;font-size:12px;">{{ c.name|slice:":2" }}</div>
+        <div style="min-width:0;flex:1;">
+          <h3 style="margin:0;font-size:14.5px;font-weight:700">{{ c.name }}</h3>
+          <div class="muted" style="font-size:12px;overflow-wrap:anywhere;">
+            NIT {{ c.nit }} · {{ c.sector }} · {{ c.contact }} ({{ c.user.email }})
+          </div>
+        </div>
+      </div>
+      <form method="post" class="bar" style="margin:0;gap:6px;">
+        {% csrf_token %}
+        <input type="hidden" name="kind" value="company">
+        <input type="hidden" name="id" value="{{ c.pk }}">
+        <input name="notes" placeholder="Observaciones..." style="flex:1 1 130px;min-width:120px;padding:5px 9px;font-size:12.5px;">
+        <button name="decision" value="ok" class="sm">✓ Aprobar</button>
+        <button name="decision" value="no" class="sm bad">✕ Rechazar</button>
+      </form>
+    </div>
+    {% empty %}
+    <div class="empty-state val-empty-compact">
+      <i class="bi bi-check-circle-fill text-success"></i>
+      <span>No hay empresas pendientes de validación.</span>
+    </div>
+    {% endfor %}
   </div>
-  <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-soft)">
-    <strong>Descripción:</strong> {{ o.description|truncatewords:35 }}
+
+  <div class="val-section" data-val-section="offers">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <h2 style="margin:0;font-size:15px;font-weight:700">Convocatorias pendientes</h2>
+      <span class="chip {% if offers %}warn{% else %}good{% endif %}" style="margin:0">{{ offers|length }}</span>
+    </div>
+
+    {% for o in offers %}
+    <div class="card interactive val-card-compact">
+      <div style="margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px">
+          <h3 style="margin:0;font-size:14.5px;font-weight:700">{{ o.title }}</h3>
+          <span class="chip brand" style="margin:0">{{ o.get_kind_display }}</span>
+          <span class="chip" style="margin:0">{{ o.get_mode_display }}</span>
+        </div>
+        <div class="muted" style="font-size:12px;overflow-wrap:anywhere;">
+          <strong>{{ o.company.name }}</strong> · {{ o.city }} · {{ o.area }} · Cierre: {{ o.deadline|date:"d/m/Y" }}
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-soft);margin-bottom:8px;">
+        {{ o.description|truncatewords:22 }}
+      </div>
+      <form method="post" class="bar" style="margin:0;gap:6px;">
+        {% csrf_token %}
+        <input type="hidden" name="kind" value="offer">
+        <input type="hidden" name="id" value="{{ o.pk }}">
+        <button name="decision" value="ok" class="sm">✓ Aprobar y publicar</button>
+        <button name="decision" value="no" class="sm bad">✕ Rechazar</button>
+      </form>
+    </div>
+    {% empty %}
+    <div class="empty-state val-empty-compact">
+      <i class="bi bi-check-circle-fill text-success"></i>
+      <span>No hay convocatorias pendientes de moderación.</span>
+    </div>
+    {% endfor %}
   </div>
 </div>
-{% empty %}
-<div class="card muted" style="text-align:center;padding:28px;border-style:dashed">
-  ✓ No hay convocatorias pendientes por revisar en este momento.
-</div>
-{% endfor %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const btns = document.querySelectorAll('.val-tab-btn');
+  const sections = document.querySelectorAll('.val-section');
+  btns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      btns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const target = btn.dataset.valTab;
+      sections.forEach((sec) => {
+        const show = target === 'all' || sec.dataset.valSection === target;
+        sec.classList.toggle('is-hidden', !show);
+      });
+    });
+  });
+});
+</script>
 {% endblock %}
