@@ -1,4 +1,6 @@
+import importlib.util
 import os
+import shutil
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
@@ -17,7 +19,7 @@ if env_path.exists():
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-change-me-ppol-ucc-2026")
 DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "yes")
-ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "*").split(",") if h.strip()]
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "django.contrib.admin", "django.contrib.auth", "django.contrib.contenttypes",
@@ -26,6 +28,11 @@ INSTALLED_APPS = [
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    *(
+        ["whitenoise.middleware.WhiteNoiseMiddleware"]
+        if importlib.util.find_spec("whitenoise")
+        else []
+    ),
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -45,8 +52,10 @@ TEMPLATES = [{
 }]
 WSGI_APPLICATION = "ppol.wsgi.application"
 
-# Base de datos: MySQL (XAMPP por defecto) o SQLite
-DB_ENGINE = os.getenv("DB_ENGINE", "mysql").lower()
+IS_VERCEL = bool(os.environ.get("VERCEL") or str(BASE_DIR).startswith("/var/task"))
+
+# Base de datos: SQLite por defecto para Vercel o MySQL
+DB_ENGINE = os.getenv("DB_ENGINE", "sqlite").lower()
 if DB_ENGINE == "mysql":
     DATABASES = {
         "default": {
@@ -63,16 +72,35 @@ if DB_ENGINE == "mysql":
         }
     }
 elif DB_ENGINE == "sqlite":
+    src_db = BASE_DIR / "db.sqlite3"
+    # En Vercel (/var/task) solo se permite escribir en /tmp
+    if IS_VERCEL:
+        tmp_db = Path("/tmp/db.sqlite3")
+        if not tmp_db.exists() and src_db.exists():
+            shutil.copy2(src_db, tmp_db)
+        db_name = tmp_db
+    else:
+        db_name = src_db
+
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+            "NAME": db_name,
         }
     }
 else:
     raise ImproperlyConfigured(
         "DB_ENGINE debe ser 'mysql' para XAMPP o 'sqlite' para desarrollo local."
     )
+
+# Usar sesiones en cookies firmadas por defecto con SQLite para que en entornos
+# serverless (Vercel) la sesión no dependa de /tmp/db.sqlite3 (que es efímero y aislado por instancia).
+SESSION_ENGINE = os.getenv(
+    "SESSION_ENGINE",
+    "django.contrib.sessions.backends.signed_cookies"
+    if DB_ENGINE == "sqlite"
+    else "django.contrib.sessions.backends.db",
+)
 
 AUTH_USER_MODEL = "core.User"
 LOGIN_URL = "login"
@@ -83,8 +111,16 @@ TIME_ZONE = "America/Bogota"
 USE_I18N = True
 USE_TZ = True
 STATIC_URL = "static/"
-MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+MEDIA_URL = "/media/"
+if IS_VERCEL:
+    src_media = BASE_DIR / "media"
+    MEDIA_ROOT = Path("/tmp/media")
+    if not MEDIA_ROOT.exists() and src_media.exists():
+        shutil.copytree(src_media, MEDIA_ROOT, dirs_exist_ok=True)
+    (MEDIA_ROOT / "cvs").mkdir(parents=True, exist_ok=True)
+else:
+    MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Las notificaciones por correo se imprimen en la consola (prototipo)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
