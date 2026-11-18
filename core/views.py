@@ -289,7 +289,10 @@ def validations(request):
         ok = request.POST.get("decision") == "ok"
         notes = request.POST.get("notes", "")[:250]
         if request.POST.get("kind") == "company":
-            c = get_object_or_404(Company, pk=request.POST["id"])
+            c = Company.objects.filter(pk=request.POST.get("id")).first()
+            if not c:
+                messages.warning(request, "La empresa seleccionada no se encontró en esta instancia o ya fue procesada.")
+                return redirect("validations")
             c.status, c.review_notes = ("APR" if ok else "REJ"), notes
             c.save()
             action_label = "aprobada" if ok else "rechazada"
@@ -307,7 +310,10 @@ def validations(request):
             )
             messages.success(request, f"Empresa «{c.name}» {action_label}.")
         else:
-            o = get_object_or_404(Offer, pk=request.POST["id"])
+            o = Offer.objects.filter(pk=request.POST.get("id")).first()
+            if not o:
+                messages.warning(request, "La convocatoria seleccionada no se encontró en esta instancia o ya fue procesada.")
+                return redirect("validations")
             o.status = "ACT" if ok else "REJ"
             o.save(update_fields=["status"])
             action_label = "aprobada y publicada" if ok else "rechazada"

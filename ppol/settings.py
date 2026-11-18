@@ -110,8 +110,10 @@ LANGUAGE_CODE = "es-co"
 TIME_ZONE = "America/Bogota"
 USE_I18N = True
 USE_TZ = True
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_MAX_AGE = 31536000
 MEDIA_URL = "/media/"
 if IS_VERCEL:
     src_media = BASE_DIR / "media"
